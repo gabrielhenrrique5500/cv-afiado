@@ -111,20 +111,32 @@
   nav.tabs button.active { color: #fff; font-weight: 600; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
 
   .panel { display: none; }
-  .panel.active { display: block; }
+  .panel.active { display: block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
   .card {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(11,11,11,0.03);
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 22px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(11,11,11,0.03), 0 8px 20px rgba(11,11,11,0.02);
+    transition: box-shadow .2s ease;
   }
-  .card h2 { font-size: 15px; margin: 0 0 4px; }
-  .card p.hint { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 14px; line-height: 1.5; }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .card-icon {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; background: var(--brand-wash);
+  }
+  .card h2 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: .003em; }
+  .card p.hint { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 14px; line-height: 1.55; }
 
-  label { display: block; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; margin-top: 10px; }
+  label { display: block; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; margin-top: 10px; font-weight: 500; }
   label:first-child { margin-top: 0; }
   input[type=text], input[type=email], input[type=tel], input[type=url], textarea, select {
-    width: 100%; padding: 8px 10px; border: 1px solid var(--gridline); border-radius: 8px;
+    width: 100%; padding: 9px 11px; border: 1px solid var(--gridline); border-radius: 9px;
     font-size: 13.5px; background: var(--surface-1); color: var(--text-primary); font-family: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input[type=text]:hover, input[type=email]:hover, input[type=tel]:hover, input[type=url]:hover, textarea:hover, select:hover { border-color: var(--text-muted); }
+  input[type=text]:focus, input[type=email]:focus, input[type=tel]:focus, input[type=url]:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash);
   }
   textarea { resize: vertical; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -133,60 +145,100 @@
 
   .btn {
     display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
-    background: var(--surface-1); color: var(--text-primary); border-radius: 8px;
-    padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+    background: var(--surface-1); color: var(--text-primary); border-radius: 9px;
+    padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease, box-shadow .15s ease;
   }
-  .btn:hover { border-color: var(--text-muted); }
+  .btn:hover { border-color: var(--text-muted); background: var(--surface-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--brand-wash); border-color: var(--brand); }
   .btn.primary {
     background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent;
-    color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(74,58,167,0.25);
+    color: #fff; font-weight: 600; box-shadow: 0 2px 10px rgba(74,58,167,0.28);
   }
-  .btn.primary:hover { filter: brightness(1.06); border-color: transparent; }
+  .btn.primary:hover { filter: brightness(1.08); border-color: transparent; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
   .btn.ghost { background: transparent; }
-  .btn.small { padding: 4px 10px; font-size: 12px; }
+  .btn.ghost:hover { background: var(--brand-wash); }
+  .btn.small { padding: 5px 11px; font-size: 12px; }
   .btn.danger { color: var(--critical); }
+  .btn.danger:hover { background: color-mix(in srgb, var(--critical) 10%, transparent); }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-  .item-block { border: 1px solid var(--gridline); border-radius: 10px; padding: 14px; margin-bottom: 12px; position: relative; }
-  .item-block .remove { position: absolute; top: 10px; right: 10px; }
+  .item-block {
+    border: 1px solid var(--gridline); background: var(--surface-2); border-radius: 12px;
+    padding: 16px; margin-bottom: 12px; position: relative; transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .item-block:hover { border-color: var(--text-muted); box-shadow: 0 2px 10px rgba(11,11,11,0.04); }
+  .item-block .remove {
+    position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; padding: 0;
+    border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0; border: 1px solid var(--gridline); background: var(--surface-1);
+  }
+  .item-block .remove::before { content: "✕"; font-size: 12px; color: var(--text-muted); }
+  .item-block .remove:hover { background: color-mix(in srgb, var(--critical) 10%, transparent); border-color: var(--critical); }
+  .item-block .remove:hover::before { color: var(--critical); }
   .bullet-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; }
   .bullet-row textarea { flex: 1; min-height: 44px; }
   .bullet-meta { display: flex; flex-direction: column; gap: 4px; width: 160px; flex-shrink: 0; }
   .bullet-meta input[type=text] { font-size: 12px; padding: 6px 8px; }
-  .bullet-meta label.chk { display: flex; align-items: center; gap: 6px; font-size: 11.5px; margin: 0; }
+  .bullet-meta label.chk { display: flex; align-items: center; gap: 6px; font-size: 11.5px; margin: 0; color: var(--text-secondary); }
 
   .skills-list { display: flex; flex-wrap: wrap; gap: 8px; }
   .skill-chip {
     display: flex; align-items: center; gap: 6px; border: 1px solid var(--gridline);
-    border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 12.5px; background: var(--surface-2);
+    border-radius: 999px; padding: 5px 6px 5px 13px; font-size: 12.5px; background: var(--surface-1);
+    transition: border-color .15s ease, box-shadow .15s ease;
   }
-  .skill-chip button { border: none; background: none; cursor: pointer; color: var(--text-muted); font-size: 14px; line-height: 1; padding: 2px; }
+  .skill-chip:hover { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash); }
+  .skill-chip button {
+    border: none; background: var(--surface-2); color: var(--text-muted); font-size: 12px; line-height: 1;
+    width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .skill-chip button:hover { background: color-mix(in srgb, var(--critical) 14%, transparent); color: var(--critical); }
   .skill-add { display: flex; gap: 8px; margin-top: 10px; }
   .skill-add input { flex: 1; }
 
   textarea#jdInput { min-height: 220px; }
 
-  .score-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-  .score-figure { font-size: 44px; font-weight: 600; line-height: 1; }
+  .score-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .score-ring { flex-shrink: 0; width: 112px; height: 112px; position: relative; }
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 10; }
+  .score-ring .ring-track { stroke: var(--gridline); }
+  .score-ring .ring-fill { stroke-linecap: round; transition: stroke-dashoffset .6s ease, stroke .3s ease; }
+  .score-figure {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700; line-height: 1;
+  }
+  .score-details { flex: 1; min-width: 220px; }
   .meter-track { flex: 1; min-width: 200px; height: 10px; border-radius: 999px; background: var(--gridline); overflow: hidden; }
   .meter-fill { height: 100%; border-radius: 999px; transition: width .3s ease; }
-  .score-label { font-size: 12.5px; color: var(--text-secondary); }
+  .score-label { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
   .legend-row { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-secondary); }
   .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
   .kw-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .kw-chip { border-radius: 999px; padding: 3px 10px; font-size: 12px; border: 1px solid var(--border); }
+  .kw-chip { border-radius: 999px; padding: 4px 11px; font-size: 12px; border: 1px solid var(--border); font-weight: 500; }
   .kw-chip.matched { background: color-mix(in srgb, var(--good) 14%, transparent); border-color: var(--good); color: var(--text-primary); }
   .kw-chip.missing { background: color-mix(in srgb, var(--critical) 12%, transparent); border-color: var(--critical); color: var(--text-primary); }
 
-  .check-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; border-bottom: 1px dashed var(--gridline); }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; font-size: 13px; border-bottom: 1px solid var(--gridline); }
   .check-item:last-child { border-bottom: none; }
-  .check-icon { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; margin-top: 1px; }
+  .check-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; margin-top: 1px; }
   .check-icon.ok { background: var(--good); }
   .check-icon.warn { background: var(--warning); color: #3a2b00; }
   .check-icon.bad { background: var(--critical); }
-  .check-text b { display: block; }
+  .check-text b { display: block; font-weight: 600; }
   .check-text span { color: var(--text-secondary); font-size: 12px; }
+
+  .doc-frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--gridline); box-shadow: 0 6px 24px rgba(11,11,11,0.06); }
+  .doc-frame-bar {
+    background: var(--surface-2); padding: 9px 14px; display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid var(--gridline); font-size: 11.5px; color: var(--text-secondary); font-weight: 500;
+  }
+  .doc-frame-bar .dots { display: flex; gap: 5px; }
+  .doc-frame-bar .dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--gridline); }
+  .doc-frame-scroll { max-height: 640px; overflow: auto; background: #e9e9e6; padding: 20px; }
 
   #printArea { display: none; }
   .resume-doc { background: #fff; color: #111; padding: 36px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 12.5px; line-height: 1.5; border: 1px solid var(--gridline); border-radius: 4px; }
@@ -243,7 +295,7 @@
   <section class="panel active" id="panel-base">
 
     <div class="card">
-      <h2>Seu arquivo de dados <span id="dirtyBadge" style="font-size:11px;font-weight:normal;color:var(--text-secondary);"></span></h2>
+      <div class="card-head"><span class="card-icon">🗂️</span><h2>Seu arquivo de dados <span id="dirtyBadge" style="font-size:11px;font-weight:normal;color:var(--text-secondary);"></span></h2></div>
       <p class="hint">Pense nisso como um documento seu: abra o arquivo, edite o que precisar nas seções abaixo e clique em "Salvar" para gravar direto nesse mesmo arquivo — sem downloads repetidos. Da primeira vez, clique em "Salvar" para criar o arquivo; nas próximas vezes, abra esse mesmo arquivo para continuar de onde parou.</p>
       <div class="btn-row">
         <button class="btn" id="btnOpenFile" type="button">📁 Abrir meu currículo-base</button>
@@ -262,7 +314,7 @@
     </div>
 
     <div class="card">
-      <h2>Importar de um currículo existente (PDF ou Word)</h2>
+      <div class="card-head"><span class="card-icon">📄</span><h2>Importar de um currículo existente (PDF ou Word)</h2></div>
       <p class="hint">O app consegue extrair o texto de um PDF ou .docx direto no navegador (nada é enviado para nenhum servidor). Ele preenche automaticamente apenas contato (nome, e-mail, telefone, LinkedIn) — resumo, habilidades e experiências você cola manualmente nos campos certos a partir do texto extraído, porque cada currículo tem um formato diferente e um preenchimento 100% automático arriscaria inventar ou embaralhar informação. <strong>Alternativa mais rápida:</strong> anexe o currículo diretamente na conversa com o Claude e peça para gerar o arquivo .json pronto — como o Claude entende o conteúdo, ele monta a estrutura completa (experiências, bullets, tags) de uma vez, sem esse trabalho manual.</p>
       <input type="file" id="resumeFileInput" accept=".pdf,.docx,.doc,.txt">
       <p class="hint" id="importStatus" style="margin:8px 0 0;"></p>
@@ -275,8 +327,8 @@
     </div>
 
     <div class="card">
-      <h2>Contato</h2>
-      <div class="row3">
+      <div class="card-head"><span class="card-icon">👤</span><h2>Contato</h2></div>
+      <div class="row3" style="margin-top:14px;">
         <div><label>Nome completo</label><input type="text" id="c_nome"></div>
         <div><label>Cargo-alvo (opcional)</label><input type="text" id="c_cargoAlvo" placeholder="ex.: Analista de Dados Sênior"></div>
         <div><label>Localização</label><input type="text" id="c_local" placeholder="Cidade, UF"></div>
@@ -291,13 +343,13 @@
     </div>
 
     <div class="card">
-      <h2>Resumo profissional (base)</h2>
+      <div class="card-head"><span class="card-icon">📝</span><h2>Resumo profissional (base)</h2></div>
       <p class="hint">Um resumo geral, "verdade universal" sobre sua carreira. O app vai gerar uma versão adaptada para cada vaga a partir disso — não precisa ser perfeito aqui.</p>
       <textarea id="c_resumo" rows="4" placeholder="ex.: Profissional com 8 anos de experiência em..."></textarea>
     </div>
 
     <div class="card">
-      <h2>Habilidades / competências</h2>
+      <div class="card-head"><span class="card-icon">🧩</span><h2>Habilidades / competências</h2></div>
       <p class="hint">Adicione todas as habilidades que você realmente domina, organizadas por categoria (ex.: "Comércio Exterior", "Sistemas e Ferramentas", "Comportamentais") — assim o currículo gerado sai agrupado como num currículo profissional de verdade, e não uma lista solta. O app vai priorizar dentro de cada categoria o que a vaga pedir — nunca inclua algo que você não sabe fazer de verdade.</p>
       <p class="hint" style="margin-top:-6px;">Os dois campos abaixo têm sugestões (clique na setinha ou comece a digitar) — mas você pode digitar qualquer coisa que não esteja na lista.</p>
       <div id="skillsList"></div>
@@ -320,31 +372,31 @@
     </div>
 
     <div class="card">
-      <h2>Experiência profissional</h2>
+      <div class="card-head"><span class="card-icon">💼</span><h2>Experiência profissional</h2></div>
       <p class="hint">Cadastre da mais recente para a mais antiga. Para cada realização (bullet), marque tags de palavras-chave relacionadas — isso ajuda o algoritmo a escolher os bullets certos para cada vaga. Marque "sempre incluir" para conquistas que não podem ficar de fora nunca.</p>
       <div id="expList"></div>
       <div class="btn-row"><button class="btn" id="btnAddExp" type="button">+ Adicionar experiência</button></div>
     </div>
 
     <div class="card">
-      <h2>Formação acadêmica</h2>
-      <div id="eduList"></div>
+      <div class="card-head"><span class="card-icon">🎓</span><h2>Formação acadêmica</h2></div>
+      <div id="eduList" style="margin-top:14px;"></div>
       <div class="btn-row"><button class="btn" id="btnAddEdu" type="button">+ Adicionar formação</button></div>
       <datalist id="courseOptions"></datalist>
       <datalist id="institutionOptions"></datalist>
     </div>
 
     <div class="card">
-      <h2>Certificações</h2>
-      <div id="certList"></div>
+      <div class="card-head"><span class="card-icon">📜</span><h2>Certificações</h2></div>
+      <div id="certList" style="margin-top:14px;"></div>
       <div class="btn-row"><button class="btn" id="btnAddCert" type="button">+ Adicionar certificação</button></div>
       <datalist id="certNameOptions"></datalist>
       <datalist id="certIssuerOptions"></datalist>
     </div>
 
     <div class="card">
-      <h2>Idiomas</h2>
-      <div id="langList"></div>
+      <div class="card-head"><span class="card-icon">🌐</span><h2>Idiomas</h2></div>
+      <div id="langList" style="margin-top:14px;"></div>
       <div class="btn-row"><button class="btn" id="btnAddLang" type="button">+ Adicionar idioma</button></div>
       <datalist id="languageOptions"></datalist>
       <datalist id="languageLevelOptions"></datalist>
@@ -358,7 +410,7 @@
   <!-- TAB 2: VAGA -->
   <section class="panel" id="panel-vaga">
     <div class="card">
-      <h2>Cole a descrição da vaga</h2>
+      <div class="card-head"><span class="card-icon">🎯</span><h2>Cole a descrição da vaga</h2></div>
       <p class="hint">Cole o texto completo do anúncio da vaga (requisitos, responsabilidades, diferenciais). Quanto mais completo, mais precisa fica a análise.</p>
       <textarea id="jdInput" placeholder="Cole aqui a descrição completa da vaga..."></textarea>
       <div class="row3" style="margin-top:12px;">
@@ -399,12 +451,18 @@
   <!-- TAB 3: RESULTADO -->
   <section class="panel" id="panel-resultado">
     <div class="card" id="scoreCard" style="display:none;">
-      <h2>Aderência à vaga (estimativa)</h2>
-      <div class="score-wrap">
-        <div class="score-figure" id="scoreFigure">0%</div>
-        <div style="flex:1; min-width:200px;">
-          <div class="meter-track"><div class="meter-fill" id="scoreMeterFill"></div></div>
+      <div class="card-head"><span class="card-icon">📊</span><h2>Aderência à vaga (estimativa)</h2></div>
+      <div class="score-wrap" style="margin-top:14px;">
+        <div class="score-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-track" cx="50" cy="50" r="42"></circle>
+            <circle class="ring-fill" id="scoreRingFill" cx="50" cy="50" r="42" stroke="var(--good)" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+          </svg>
+          <div class="score-figure" id="scoreFigure">0%</div>
+        </div>
+        <div class="score-details">
           <div class="score-label" id="scoreLabel"></div>
+          <div class="meter-track"><div class="meter-fill" id="scoreMeterFill"></div></div>
         </div>
       </div>
       <div class="legend-row">
@@ -413,31 +471,34 @@
         <span><span class="legend-dot" style="background:var(--serious)"></span>Fraca (40–59%)</span>
         <span><span class="legend-dot" style="background:var(--critical)"></span>Muito fraca (&lt;40%)</span>
       </div>
-      <h2 style="margin-top:18px;">Palavras-chave da vaga</h2>
-      <p class="hint" style="margin-bottom:6px;">Verde = já aparece no seu currículo adaptado. Vermelho = a vaga pede, mas não foi encontrado — só inclua se for verdade sobre sua experiência.</p>
+      <div class="card-head" style="margin-top:20px;"><span class="card-icon">🔑</span><h2>Palavras-chave da vaga</h2></div>
+      <p class="hint" style="margin:8px 0 6px;">Verde = já aparece no seu currículo adaptado. Vermelho = a vaga pede, mas não foi encontrado — só inclua se for verdade sobre sua experiência.</p>
       <div class="kw-list" id="kwList"></div>
     </div>
 
     <div class="card" id="critiqueCard" style="display:none;">
-      <h2>Crítica de recrutador</h2>
+      <div class="card-head"><span class="card-icon">🕵️</span><h2>Crítica de recrutador</h2></div>
       <p class="hint">Como um recrutador exigente leria seu currículo adaptado antes de decidir avançar ou não.</p>
       <div id="critiqueList"></div>
     </div>
 
     <div class="card" id="atsCard" style="display:none;">
-      <h2>Checklist ATS (leitura por robô de triagem)</h2>
-      <div id="atsList"></div>
+      <div class="card-head"><span class="card-icon">✅</span><h2>Checklist ATS (leitura por robô de triagem)</h2></div>
+      <div id="atsList" style="margin-top:6px;"></div>
     </div>
 
     <div class="card" id="resumeCard" style="display:none;">
-      <h2>Currículo adaptado</h2>
-      <div class="btn-row" style="margin-bottom:14px;">
+      <div class="card-head"><span class="card-icon">🧾</span><h2>Currículo adaptado</h2></div>
+      <div class="btn-row" style="margin: 12px 0 14px;">
         <button class="btn primary" id="btnPrint" type="button">🖨 Imprimir / Salvar como PDF</button>
         <button class="btn" id="btnDownloadHtml" type="button">⬇ Baixar .html (portátil)</button>
         <button class="btn" id="btnDownloadTxt" type="button">⬇ Baixar .txt (para colar em formulários)</button>
         <button class="btn" id="btnCopyTxt" type="button">📋 Copiar texto</button>
       </div>
-      <div id="resumePreview"></div>
+      <div class="doc-frame">
+        <div class="doc-frame-bar"><span class="dots"><span></span><span></span><span></span></span>Pré-visualização</div>
+        <div class="doc-frame-scroll"><div id="resumePreview"></div></div>
+      </div>
     </div>
   </section>
 
@@ -1371,6 +1432,11 @@
     document.getElementById("scoreMeterFill").style.width = pct + "%";
     document.getElementById("scoreMeterFill").style.background = scoreColor(pct);
     document.getElementById("scoreLabel").textContent = scoreText(pct);
+    document.getElementById("scoreLabel").style.color = scoreColor(pct);
+    var ringFill = document.getElementById("scoreRingFill");
+    var circumference = 264; // 2 * PI * r(42), rounded
+    ringFill.style.stroke = scoreColor(pct);
+    ringFill.style.strokeDashoffset = String(circumference * (1 - pct / 100));
 
     var kwWrap = document.getElementById("kwList");
     kwWrap.innerHTML = "";
