@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Currículo Adaptável — Otimizador ATS</title>
+<title>CV Afiado — currículo adaptado a cada vaga</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%234a3aa7'/%3E%3Cpath d='M11 20l6.5 6.5L29 13.5' stroke='white' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   .viz-root {
     color-scheme: light;
@@ -17,6 +18,9 @@
     --border:         rgba(11,11,11,0.10);
     --blue:           #2a78d6;
     --blue-100:       #cde2fb;
+    --brand:          #4a3aa7;
+    --brand-2:        #2a63c9;
+    --brand-wash:     rgba(74,58,167,0.06);
     --good:           #0ca30c;
     --warning:        #fab219;
     --serious:        #ec835a;
@@ -35,6 +39,9 @@
       --border:         rgba(255,255,255,0.10);
       --blue:           #3987e5;
       --blue-100:       #184f95;
+      --brand:          #9085e9;
+      --brand-2:        #3987e5;
+      --brand-wash:     rgba(144,133,233,0.10);
       --good:           #0ca30c;
       --warning:        #fab219;
       --serious:        #ec835a;
@@ -53,6 +60,9 @@
     --border:         rgba(255,255,255,0.10);
     --blue:           #3987e5;
     --blue-100:       #184f95;
+    --brand:          #9085e9;
+    --brand-2:        #3987e5;
+    --brand-wash:     rgba(144,133,233,0.10);
     --good:           #0ca30c;
     --warning:        #fab219;
     --serious:        #ec835a;
@@ -63,34 +73,49 @@
   body {
     margin: 0;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--surface-2);
+    background:
+      radial-gradient(680px 320px at 12% -10%, var(--brand-wash), transparent),
+      var(--surface-2);
     color: var(--text-primary);
   }
   .app { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
-  header.top {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
-  }
-  header.top h1 { font-size: 20px; margin: 0; }
-  header.top p.sub { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
-  .theme-toggle {
-    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
-    border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer;
-  }
 
-  nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--gridline); margin-bottom: 20px; flex-wrap: wrap; }
-  nav.tabs button {
-    background: none; border: none; padding: 10px 16px; font-size: 14px; cursor: pointer;
-    color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  header.hero {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    border-radius: 18px; padding: 22px 26px; margin-bottom: 22px;
+    box-shadow: 0 10px 30px rgba(42, 30, 110, 0.22);
   }
-  nav.tabs button.active { color: var(--text-primary); border-bottom-color: var(--blue); font-weight: 600; }
+  .hero-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .logo-mark { width: 42px; height: 42px; flex-shrink: 0; }
+  header.hero h1 {
+    font-size: 21px; margin: 0; color: #fff; letter-spacing: .01em; font-weight: 700;
+  }
+  header.hero p.sub { margin: 3px 0 0; color: rgba(255,255,255,0.88); font-size: 13px; max-width: 46ch; }
+  .theme-toggle {
+    border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.14); color: #fff;
+    border-radius: 8px; padding: 7px 13px; font-size: 13px; cursor: pointer; flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: rgba(255,255,255,0.24); }
+
+  nav.tabs {
+    display: flex; gap: 4px; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px; margin-bottom: 22px; width: fit-content; max-width: 100%;
+    overflow-x: auto;
+  }
+  nav.tabs button {
+    background: none; border: none; padding: 9px 18px; font-size: 13.5px; cursor: pointer;
+    color: var(--text-secondary); border-radius: 999px; white-space: nowrap; transition: background .15s ease, color .15s ease;
+  }
+  nav.tabs button:hover { color: var(--text-primary); }
+  nav.tabs button.active { color: #fff; font-weight: 600; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
 
   .panel { display: none; }
   .panel.active { display: block; }
 
   .card {
     background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 20px; margin-bottom: 16px;
+    padding: 18px 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(11,11,11,0.03);
   }
   .card h2 { font-size: 15px; margin: 0 0 4px; }
   .card p.hint { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 14px; line-height: 1.5; }
@@ -112,7 +137,11 @@
     padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
   }
   .btn:hover { border-color: var(--text-muted); }
-  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent;
+    color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(74,58,167,0.25);
+  }
+  .btn.primary:hover { filter: brightness(1.06); border-color: transparent; }
   .btn.ghost { background: transparent; }
   .btn.small { padding: 4px 10px; font-size: 12px; }
   .btn.danger { color: var(--critical); }
@@ -190,10 +219,16 @@
 <body>
 <div class="app viz-root" id="app">
 
-  <header class="top">
-    <div>
-      <h1>Currículo Adaptável — Otimizador ATS</h1>
-      <p class="sub">Cadastre sua trajetória uma vez. A cada vaga nova, cole a descrição e receba um currículo adaptado, com crítica de recrutador e checklist ATS.</p>
+  <header class="hero">
+    <div class="hero-brand">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="40" height="40" rx="10" fill="white" fill-opacity="0.18"/>
+        <path d="M11 20l6.5 6.5L29 13.5" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1>CV Afiado</h1>
+        <p class="sub">Cadastre sua trajetória uma vez. A cada vaga nova, cole a descrição e receba um currículo adaptado, com crítica de recrutador e checklist ATS.</p>
+      </div>
     </div>
     <button class="theme-toggle" id="themeToggle" type="button">🌓 Tema</button>
   </header>
@@ -830,19 +865,33 @@
   }
 
   document.getElementById("btnOpenFile").addEventListener("click", async function(){
-    if (!fsSupported) { document.getElementById("btnImportJson").click(); return; }
-    if (isDirty && !confirm("Você tem alterações não salvas. Abrir outro arquivo agora vai descartá-las. Continuar?")) return;
+    if (!fsSupported) {
+      if (isDirty && !confirm("Você tem alterações não salvas. Abrir outro arquivo agora vai descartá-las. Continuar?")) return;
+      document.getElementById("btnImportJson").click();
+      return;
+    }
+    // IMPORTANT: showOpenFilePicker must be the first thing called on click — any confirm()/alert()
+    // beforehand consumes the click's user-activation and the picker throws "Must be handling a user gesture".
+    var handles;
     try {
-      var handles = await window.showOpenFilePicker({
+      handles = await window.showOpenFilePicker({
         types: [{ description: "Currículo-base (JSON)", accept: { "application/json": [".json"] } }]
       });
-      fileHandle = handles[0];
-      var file = await fileHandle.getFile();
-      var text = await file.text();
-      applyLoadedData(JSON.parse(text));
-      setDirty(false);
     } catch (err) {
       if (err && err.name !== "AbortError") alert("Não foi possível abrir o arquivo: " + err.message);
+      return;
+    }
+    try {
+      var pickedHandle = handles[0];
+      var file = await pickedHandle.getFile();
+      var text = await file.text();
+      var data = JSON.parse(text);
+      if (isDirty && !confirm("Você tem alterações não salvas. Abrir \"" + file.name + "\" agora vai descartá-las. Continuar?")) return;
+      fileHandle = pickedHandle;
+      applyLoadedData(data);
+      setDirty(false);
+    } catch (err) {
+      alert("Não foi possível ler este arquivo: " + err.message);
     }
   });
 
