@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currículo Adaptável — Otimizador ATS</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --blue:           #2a78d6;
+    --blue-100:       #cde2fb;
+    --good:           #0ca30c;
+    --warning:        #fab219;
+    --serious:        #ec835a;
+    --critical:       #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --blue:           #3987e5;
+      --blue-100:       #184f95;
+      --good:           #0ca30c;
+      --warning:        #fab219;
+      --serious:        #ec835a;
+      --critical:       #e66767;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --surface-2:      #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --blue:           #3987e5;
+    --blue-100:       #184f95;
+    --good:           #0ca30c;
+    --warning:        #fab219;
+    --serious:        #ec835a;
+    --critical:       #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--surface-2);
+    color: var(--text-primary);
+  }
+  .app { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  header.top h1 { font-size: 20px; margin: 0; }
+  header.top p.sub { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+  }
+
+  nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--gridline); margin-bottom: 20px; flex-wrap: wrap; }
+  nav.tabs button {
+    background: none; border: none; padding: 10px 16px; font-size: 14px; cursor: pointer;
+    color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  nav.tabs button.active { color: var(--text-primary); border-bottom-color: var(--blue); font-weight: 600; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 4px; }
+  .card p.hint { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 14px; line-height: 1.5; }
+
+  label { display: block; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; margin-top: 10px; }
+  label:first-child { margin-top: 0; }
+  input[type=text], input[type=email], input[type=tel], input[type=url], textarea, select {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--gridline); border-radius: 8px;
+    font-size: 13.5px; background: var(--surface-1); color: var(--text-primary); font-family: inherit;
+  }
+  textarea { resize: vertical; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .row, .row3 { grid-template-columns: 1fr; } }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--text-primary); border-radius: 8px;
+    padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .btn:hover { border-color: var(--text-muted); }
+  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .btn.ghost { background: transparent; }
+  .btn.small { padding: 4px 10px; font-size: 12px; }
+  .btn.danger { color: var(--critical); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  .item-block { border: 1px solid var(--gridline); border-radius: 10px; padding: 14px; margin-bottom: 12px; position: relative; }
+  .item-block .remove { position: absolute; top: 10px; right: 10px; }
+  .bullet-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; }
+  .bullet-row textarea { flex: 1; min-height: 44px; }
+  .bullet-meta { display: flex; flex-direction: column; gap: 4px; width: 160px; flex-shrink: 0; }
+  .bullet-meta input[type=text] { font-size: 12px; padding: 6px 8px; }
+  .bullet-meta label.chk { display: flex; align-items: center; gap: 6px; font-size: 11.5px; margin: 0; }
+
+  .skills-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill-chip {
+    display: flex; align-items: center; gap: 6px; border: 1px solid var(--gridline);
+    border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 12.5px; background: var(--surface-2);
+  }
+  .skill-chip button { border: none; background: none; cursor: pointer; color: var(--text-muted); font-size: 14px; line-height: 1; padding: 2px; }
+  .skill-add { display: flex; gap: 8px; margin-top: 10px; }
+  .skill-add input { flex: 1; }
+
+  textarea#jdInput { min-height: 220px; }
+
+  .score-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .score-figure { font-size: 44px; font-weight: 600; line-height: 1; }
+  .meter-track { flex: 1; min-width: 200px; height: 10px; border-radius: 999px; background: var(--gridline); overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: 999px; transition: width .3s ease; }
+  .score-label { font-size: 12.5px; color: var(--text-secondary); }
+  .legend-row { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-secondary); }
+  .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+  .kw-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .kw-chip { border-radius: 999px; padding: 3px 10px; font-size: 12px; border: 1px solid var(--border); }
+  .kw-chip.matched { background: color-mix(in srgb, var(--good) 14%, transparent); border-color: var(--good); color: var(--text-primary); }
+  .kw-chip.missing { background: color-mix(in srgb, var(--critical) 12%, transparent); border-color: var(--critical); color: var(--text-primary); }
+
+  .check-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; border-bottom: 1px dashed var(--gridline); }
+  .check-item:last-child { border-bottom: none; }
+  .check-icon { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; margin-top: 1px; }
+  .check-icon.ok { background: var(--good); }
+  .check-icon.warn { background: var(--warning); color: #3a2b00; }
+  .check-icon.bad { background: var(--critical); }
+  .check-text b { display: block; }
+  .check-text span { color: var(--text-secondary); font-size: 12px; }
+
+  #printArea { display: none; }
+  .resume-doc { background: #fff; color: #111; padding: 36px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 12.5px; line-height: 1.5; border: 1px solid var(--gridline); border-radius: 4px; }
+  .resume-doc .resume-header { text-align: center; margin-bottom: 14px; }
+  .resume-doc h1 { font-size: 20px; margin: 0 0 3px; letter-spacing: .01em; }
+  .resume-doc .resume-subtitle { font-size: 13px; color: #2a5ba8; margin-bottom: 4px; }
+  .resume-doc .contact-line { font-size: 11.5px; color: #333; }
+  .resume-doc h2 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1.5px solid #111; padding-bottom: 2px; margin: 16px 0 8px; }
+  .resume-doc .exp-block { margin-bottom: 10px; }
+  .resume-doc .exp-head { font-weight: bold; font-size: 12.5px; }
+  .resume-doc .exp-dates { font-weight: normal; font-style: italic; }
+  .resume-doc .exp-sub { font-style: italic; font-size: 11.5px; margin-bottom: 4px; }
+  .resume-doc ul { margin: 0 0 0 18px; padding: 0; }
+  .resume-doc li { margin-bottom: 3px; }
+  .resume-doc .skills-line { font-size: 12px; }
+  .resume-doc .skill-group { margin-bottom: 6px; }
+  .resume-doc .skill-cat { font-weight: bold; font-size: 12px; margin-bottom: 2px; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+    .resume-doc { border: none; }
+  }
+
+  details.help { margin-top: 4px; }
+  details.help summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="app viz-root" id="app">
+
+  <header class="top">
+    <div>
+      <h1>Currículo Adaptável — Otimizador ATS</h1>
+      <p class="sub">Cadastre sua trajetória uma vez. A cada vaga nova, cole a descrição e receba um currículo adaptado, com crítica de recrutador e checklist ATS.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">🌓 Tema</button>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="base" class="active">1 · Meu currículo base</button>
+    <button data-tab="vaga">2 · Nova vaga</button>
+    <button data-tab="resultado">3 · Resultado</button>
+  </nav>
+
+  <!-- TAB 1: BASE -->
+  <section class="panel active" id="panel-base">
+
+    <div class="card">
+      <h2>Seu arquivo de dados <span id="dirtyBadge" style="font-size:11px;font-weight:normal;color:var(--text-secondary);"></span></h2>
+      <p class="hint">Pense nisso como um documento seu: abra o arquivo, edite o que precisar nas seções abaixo e clique em "Salvar" para gravar direto nesse mesmo arquivo — sem downloads repetidos. Da primeira vez, clique em "Salvar" para criar o arquivo; nas próximas vezes, abra esse mesmo arquivo para continuar de onde parou.</p>
+      <div class="btn-row">
+        <button class="btn" id="btnOpenFile" type="button">📁 Abrir meu currículo-base</button>
+        <button class="btn primary" id="btnSaveFile" type="button">💾 Salvar</button>
+        <button class="btn ghost" id="btnLoadExample" type="button">Ver exemplo preenchido</button>
+      </div>
+      <details class="help">
+        <summary>Meu navegador não deixa "salvar direto" / prefiro baixar e importar manualmente</summary>
+        <p class="hint">Alguns navegadores (Firefox, Safari) não suportam salvar direto no arquivo. Use as opções abaixo como alternativa:</p>
+        <div class="btn-row">
+          <button class="btn small" id="btnExportJson" type="button">⬇ Baixar dados-base (.json)</button>
+          <button class="btn small" id="btnImportJsonTrigger" type="button">⬆ Carregar um .json baixado</button>
+          <input type="file" id="btnImportJson" accept="application/json" style="display:none">
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>Importar de um currículo existente (PDF ou Word)</h2>
+      <p class="hint">O app consegue extrair o texto de um PDF ou .docx direto no navegador (nada é enviado para nenhum servidor). Ele preenche automaticamente apenas contato (nome, e-mail, telefone, LinkedIn) — resumo, habilidades e experiências você cola manualmente nos campos certos a partir do texto extraído, porque cada currículo tem um formato diferente e um preenchimento 100% automático arriscaria inventar ou embaralhar informação. <strong>Alternativa mais rápida:</strong> anexe o currículo diretamente na conversa com o Claude e peça para gerar o arquivo .json pronto — como o Claude entende o conteúdo, ele monta a estrutura completa (experiências, bullets, tags) de uma vez, sem esse trabalho manual.</p>
+      <input type="file" id="resumeFileInput" accept=".pdf,.docx,.doc,.txt">
+      <p class="hint" id="importStatus" style="margin:8px 0 0;"></p>
+      <label style="margin-top:12px;">Texto extraído (revise e copie os trechos para os campos certos)</label>
+      <textarea id="extractedText" rows="8" placeholder="O texto extraído do arquivo aparece aqui..."></textarea>
+      <div class="btn-row">
+        <button class="btn small" id="btnAutoFillFromText" type="button">Preencher contato automaticamente</button>
+        <button class="btn small ghost" id="btnCopyExtracted" type="button">📋 Copiar texto extraído</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Contato</h2>
+      <div class="row3">
+        <div><label>Nome completo</label><input type="text" id="c_nome"></div>
+        <div><label>Cargo-alvo (opcional)</label><input type="text" id="c_cargoAlvo" placeholder="ex.: Analista de Dados Sênior"></div>
+        <div><label>Localização</label><input type="text" id="c_local" placeholder="Cidade, UF"></div>
+      </div>
+      <div class="row3">
+        <div><label>E-mail</label><input type="email" id="c_email"></div>
+        <div><label>Telefone</label><input type="tel" id="c_tel"></div>
+        <div><label>LinkedIn (URL)</label><input type="url" id="c_linkedin"></div>
+      </div>
+      <label>Portfólio / GitHub / site (opcional)</label>
+      <input type="url" id="c_portfolio">
+    </div>
+
+    <div class="card">
+      <h2>Resumo profissional (base)</h2>
+      <p class="hint">Um resumo geral, "verdade universal" sobre sua carreira. O app vai gerar uma versão adaptada para cada vaga a partir disso — não precisa ser perfeito aqui.</p>
+      <textarea id="c_resumo" rows="4" placeholder="ex.: Profissional com 8 anos de experiência em..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Habilidades / competências</h2>
+      <p class="hint">Adicione todas as habilidades que você realmente domina, organizadas por categoria (ex.: "Comércio Exterior", "Sistemas e Ferramentas", "Comportamentais") — assim o currículo gerado sai agrupado como num currículo profissional de verdade, e não uma lista solta. O app vai priorizar dentro de cada categoria o que a vaga pedir — nunca inclua algo que você não sabe fazer de verdade.</p>
+      <p class="hint" style="margin-top:-6px;">Os dois campos abaixo têm sugestões (clique na setinha ou comece a digitar) — mas você pode digitar qualquer coisa que não esteja na lista.</p>
+      <div id="skillsList"></div>
+      <div class="skill-add" style="flex-wrap:wrap;">
+        <input type="text" id="skillInput" list="skillNameOptions" placeholder="Habilidade(s), separadas por vírgula" style="flex:2;min-width:200px;">
+        <input type="text" id="skillCategoryInput" list="categoryOptions" placeholder="Categoria" style="flex:1;min-width:160px;">
+        <datalist id="categoryOptions">
+          <option value="Área técnica / domínio"></option>
+          <option value="Sistemas e Ferramentas"></option>
+          <option value="Gestão e Liderança"></option>
+          <option value="Vendas e Relacionamento"></option>
+          <option value="Marketing e Comunicação"></option>
+          <option value="Dados e Analytics"></option>
+          <option value="Finanças e Controladoria"></option>
+          <option value="Comportamentais"></option>
+        </datalist>
+        <datalist id="skillNameOptions"></datalist>
+        <button class="btn small" id="btnAddSkill" type="button">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Experiência profissional</h2>
+      <p class="hint">Cadastre da mais recente para a mais antiga. Para cada realização (bullet), marque tags de palavras-chave relacionadas — isso ajuda o algoritmo a escolher os bullets certos para cada vaga. Marque "sempre incluir" para conquistas que não podem ficar de fora nunca.</p>
+      <div id="expList"></div>
+      <div class="btn-row"><button class="btn" id="btnAddExp" type="button">+ Adicionar experiência</button></div>
+    </div>
+
+    <div class="card">
+      <h2>Formação acadêmica</h2>
+      <div id="eduList"></div>
+      <div class="btn-row"><button class="btn" id="btnAddEdu" type="button">+ Adicionar formação</button></div>
+      <datalist id="courseOptions"></datalist>
+      <datalist id="institutionOptions"></datalist>
+    </div>
+
+    <div class="card">
+      <h2>Certificações</h2>
+      <div id="certList"></div>
+      <div class="btn-row"><button class="btn" id="btnAddCert" type="button">+ Adicionar certificação</button></div>
+      <datalist id="certNameOptions"></datalist>
+      <datalist id="certIssuerOptions"></datalist>
+    </div>
+
+    <div class="card">
+      <h2>Idiomas</h2>
+      <div id="langList"></div>
+      <div class="btn-row"><button class="btn" id="btnAddLang" type="button">+ Adicionar idioma</button></div>
+      <datalist id="languageOptions"></datalist>
+      <datalist id="languageLevelOptions"></datalist>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="btnGoToVaga" type="button">Salvar e ir para "Nova vaga" →</button>
+    </div>
+  </section>
+
+  <!-- TAB 2: VAGA -->
+  <section class="panel" id="panel-vaga">
+    <div class="card">
+      <h2>Cole a descrição da vaga</h2>
+      <p class="hint">Cole o texto completo do anúncio da vaga (requisitos, responsabilidades, diferenciais). Quanto mais completo, mais precisa fica a análise.</p>
+      <textarea id="jdInput" placeholder="Cole aqui a descrição completa da vaga..."></textarea>
+      <div class="row3" style="margin-top:12px;">
+        <div>
+          <label>Idioma do currículo gerado</label>
+          <select id="outLang">
+            <option value="auto">Detectar pelo idioma da vaga</option>
+            <option value="pt">Sempre em português</option>
+            <option value="en">Sempre em inglês</option>
+          </select>
+        </div>
+        <div>
+          <label>Máx. de bullets por experiência</label>
+          <select id="maxBullets">
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <div>
+          <label>Máx. de habilidades listadas</label>
+          <select id="maxSkills">
+            <option value="10">10</option>
+            <option value="14" selected>14</option>
+            <option value="18">18</option>
+            <option value="24">24</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="btnAnalyze" type="button">🔍 Analisar vaga e adaptar currículo</button>
+      </div>
+      <p class="hint" id="analyzeMsg"></p>
+    </div>
+  </section>
+
+  <!-- TAB 3: RESULTADO -->
+  <section class="panel" id="panel-resultado">
+    <div class="card" id="scoreCard" style="display:none;">
+      <h2>Aderência à vaga (estimativa)</h2>
+      <div class="score-wrap">
+        <div class="score-figure" id="scoreFigure">0%</div>
+        <div style="flex:1; min-width:200px;">
+          <div class="meter-track"><div class="meter-fill" id="scoreMeterFill"></div></div>
+          <div class="score-label" id="scoreLabel"></div>
+        </div>
+      </div>
+      <div class="legend-row">
+        <span><span class="legend-dot" style="background:var(--good)"></span>Boa aderência (≥80%)</span>
+        <span><span class="legend-dot" style="background:var(--warning)"></span>Razoável (60–79%)</span>
+        <span><span class="legend-dot" style="background:var(--serious)"></span>Fraca (40–59%)</span>
+        <span><span class="legend-dot" style="background:var(--critical)"></span>Muito fraca (&lt;40%)</span>
+      </div>
+      <h2 style="margin-top:18px;">Palavras-chave da vaga</h2>
+      <p class="hint" style="margin-bottom:6px;">Verde = já aparece no seu currículo adaptado. Vermelho = a vaga pede, mas não foi encontrado — só inclua se for verdade sobre sua experiência.</p>
+      <div class="kw-list" id="kwList"></div>
+    </div>
+
+    <div class="card" id="critiqueCard" style="display:none;">
+      <h2>Crítica de recrutador</h2>
+      <p class="hint">Como um recrutador exigente leria seu currículo adaptado antes de decidir avançar ou não.</p>
+      <div id="critiqueList"></div>
+    </div>
+
+    <div class="card" id="atsCard" style="display:none;">
+      <h2>Checklist ATS (leitura por robô de triagem)</h2>
+      <div id="atsList"></div>
+    </div>
+
+    <div class="card" id="resumeCard" style="display:none;">
+      <h2>Currículo adaptado</h2>
+      <div class="btn-row" style="margin-bottom:14px;">
+        <button class="btn primary" id="btnPrint" type="button">🖨 Imprimir / Salvar como PDF</button>
+        <button class="btn" id="btnDownloadHtml" type="button">⬇ Baixar .html (portátil)</button>
+        <button class="btn" id="btnDownloadTxt" type="button">⬇ Baixar .txt (para colar em formulários)</button>
+        <button class="btn" id="btnCopyTxt" type="button">📋 Copiar texto</button>
+      </div>
+      <div id="resumePreview"></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="printArea"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script type="module">
+  import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.2.108/pdf.min.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.2.108/pdf.worker.min.mjs";
+  window.__extractPdfText = async function(arrayBuffer){
+    var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    var text = "";
+    for (var i = 1; i <= pdf.numPages; i++){
+      var page = await pdf.getPage(i);
+      var content = await page.getTextContent();
+      text += content.items.map(function(it){ return it.str; }).join(" ") + "\n\n";
+    }
+    return text;
+  };
+  window.__pdfjsReady = true;
+</script>
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------------------------------------------------------
+   * STATE
+   * ------------------------------------------------------------- */
+  var state = {
+    contato: { nome:"", cargoAlvo:"", local:"", email:"", tel:"", linkedin:"", portfolio:"" },
+    resumo: "",
+    habilidades: [],
+    experiencias: [],
+    formacao: [],
+    certificacoes: [],
+    idiomas: []
+  };
+
+  var uid = 0;
+  function nextId(){ uid += 1; return "id" + uid; }
+
+  /* ---------------------------------------------------------------
+   * TABS
+   * ------------------------------------------------------------- */
+  document.querySelectorAll("nav.tabs button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll("nav.tabs button").forEach(function(b){ b.classList.remove("active"); });
+      document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
+      btn.classList.add("active");
+      document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+    });
+  });
+  document.getElementById("btnGoToVaga").addEventListener("click", function(){
+    syncStateFromForm();
+    document.querySelector('nav.tabs button[data-tab="vaga"]').click();
+  });
+
+  /* ---------------------------------------------------------------
+   * THEME TOGGLE
+   * ------------------------------------------------------------- */
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var root = document.documentElement;
+    var current = root.getAttribute("data-theme");
+    if (current === "dark") { root.setAttribute("data-theme", "light"); }
+    else if (current === "light") { root.removeAttribute("data-theme"); }
+    else { root.setAttribute("data-theme", "dark"); }
+  });
+
+  /* ---------------------------------------------------------------
+   * SKILLS UI
+   * ------------------------------------------------------------- */
+  function skillCategoryOrder(){
+    var order = [];
+    state.habilidades.forEach(function(h){ if (order.indexOf(h.categoria) === -1) order.push(h.categoria); });
+    return order;
+  }
+  function renderSkills(){
+    var wrap = document.getElementById("skillsList");
+    wrap.innerHTML = "";
+    var categories = skillCategoryOrder();
+    categories.forEach(function(cat){
+      var group = document.createElement("div");
+      group.style.marginBottom = "10px";
+      var heading = document.createElement("div");
+      heading.style.cssText = "font-size:11.5px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;";
+      heading.textContent = cat;
+      group.appendChild(heading);
+      var chipsWrap = document.createElement("div");
+      chipsWrap.className = "skills-list";
+      state.habilidades.forEach(function(skill){
+        if (skill.categoria !== cat) return;
+        var chip = document.createElement("span");
+        chip.className = "skill-chip";
+        chip.innerHTML = '<span></span><button type="button" title="remover">×</button>';
+        chip.querySelector("span").textContent = skill.nome;
+        chip.querySelector("button").addEventListener("click", function(){
+          state.habilidades = state.habilidades.filter(function(s){ return s._id !== skill._id; });
+          renderSkills();
+        });
+        chipsWrap.appendChild(chip);
+      });
+      group.appendChild(chipsWrap);
+      wrap.appendChild(group);
+    });
+  }
+  function addSkillFromInput(){
+    var input = document.getElementById("skillInput");
+    var catInput = document.getElementById("skillCategoryInput");
+    var raw = input.value.trim();
+    var categoria = catInput.value.trim() || "Habilidades";
+    if (!raw) return;
+    var existingNames = state.habilidades.map(function(s){ return norm(s.nome); });
+    raw.split(",").forEach(function(part){
+      var v = part.trim();
+      if (v && existingNames.indexOf(norm(v)) === -1) {
+        state.habilidades.push({ _id: nextId(), nome: v, categoria: categoria });
+        existingNames.push(norm(v));
+      }
+    });
+    input.value = "";
+    renderSkills();
+  }
+  document.getElementById("btnAddSkill").addEventListener("click", addSkillFromInput);
+  document.getElementById("skillInput").addEventListener("keydown", function(e){
+    if (e.key === "Enter") { e.preventDefault(); addSkillFromInput(); }
+  });
+
+  /* ---------------------------------------------------------------
+   * EXPERIENCE UI
+   * ------------------------------------------------------------- */
+  function makeExpBlock(exp){
+    var block = document.createElement("div");
+    block.className = "item-block";
+    block.dataset.id = exp._id;
+    block.innerHTML =
+      '<button type="button" class="btn small danger remove">Remover</button>' +
+      '<div class="row">' +
+        '<div><label>Empresa</label><input type="text" class="f-empresa" value="'+escapeAttr(exp.empresa)+'"></div>' +
+        '<div><label>Cargo</label><input type="text" class="f-cargo" value="'+escapeAttr(exp.cargo)+'"></div>' +
+      '</div>' +
+      '<div class="row3">' +
+        '<div><label>Início (mm/aaaa)</label><input type="text" class="f-inicio" value="'+escapeAttr(exp.inicio)+'" placeholder="01/2022"></div>' +
+        '<div><label>Fim (mm/aaaa ou "Atual")</label><input type="text" class="f-fim" value="'+escapeAttr(exp.fim)+'" placeholder="Atual"></div>' +
+        '<div><label>Local</label><input type="text" class="f-local" value="'+escapeAttr(exp.local)+'" placeholder="Cidade, UF / Remoto"></div>' +
+      '</div>' +
+      '<label style="margin-top:12px;">Realizações / bullets</label>' +
+      '<div class="bullets"></div>' +
+      '<div class="btn-row"><button type="button" class="btn small btnAddBullet">+ Adicionar bullet</button></div>';
+
+    block.querySelector(".remove").addEventListener("click", function(){
+      state.experiencias = state.experiencias.filter(function(e){ return e._id !== exp._id; });
+      renderExperiences();
+    });
+    block.querySelector(".btnAddBullet").addEventListener("click", function(){
+      exp.bullets.push({ texto:"", tags:"", destaque:false, _id: nextId() });
+      renderExperiences();
+    });
+
+    var bulletsWrap = block.querySelector(".bullets");
+    exp.bullets.forEach(function(b){
+      var row = document.createElement("div");
+      row.className = "bullet-row";
+      row.innerHTML =
+        '<textarea class="f-bullet-texto" placeholder="ex.: Reduzi o tempo de fechamento contábil em 30% ao automatizar planilhas de conciliação.">'+escapeHtml(b.texto)+'</textarea>' +
+        '<div class="bullet-meta">' +
+          '<input type="text" class="f-bullet-tags" placeholder="tags: excel, financeiro" value="'+escapeAttr(b.tags)+'">' +
+          '<label class="chk"><input type="checkbox" class="f-bullet-destaque"'+(b.destaque?" checked":"")+'> sempre incluir</label>' +
+          '<button type="button" class="btn small danger btnRemoveBullet">Remover bullet</button>' +
+        '</div>';
+      row.querySelector(".btnRemoveBullet").addEventListener("click", function(){
+        exp.bullets = exp.bullets.filter(function(x){ return x._id !== b._id; });
+        renderExperiences();
+      });
+      bulletsWrap.appendChild(row);
+    });
+
+    return block;
+  }
+  function renderExperiences(){
+    var wrap = document.getElementById("expList");
+    var scrollY = window.scrollY;
+    wrap.innerHTML = "";
+    state.experiencias.forEach(function(exp){ wrap.appendChild(makeExpBlock(exp)); });
+    window.scrollTo(0, scrollY);
+  }
+  document.getElementById("btnAddExp").addEventListener("click", function(){
+    syncStateFromForm();
+    state.experiencias.push({ _id: nextId(), empresa:"", cargo:"", inicio:"", fim:"", local:"", bullets:[{texto:"",tags:"",destaque:false,_id:nextId()}] });
+    renderExperiences();
+  });
+
+  /* ---------------------------------------------------------------
+   * EDUCATION / CERT / LANGUAGE UI (simpler repeating rows)
+   * ------------------------------------------------------------- */
+  function makeSimpleRow(fields, item, onRemove){
+    var block = document.createElement("div");
+    block.className = "item-block";
+    var html = '<button type="button" class="btn small danger remove">Remover</button><div class="row3">';
+    fields.forEach(function(f){
+      html += '<div><label>'+f.label+'</label><input type="text" class="f-'+f.key+'" value="'+escapeAttr(item[f.key]||"")+'" placeholder="'+(f.placeholder||"")+'"'+(f.list?' list="'+f.list+'"':'')+'></div>';
+    });
+    html += '</div>';
+    block.innerHTML = html;
+    block.querySelector(".remove").addEventListener("click", onRemove);
+    return block;
+  }
+
+  function renderEdu(){
+    var wrap = document.getElementById("eduList");
+    wrap.innerHTML = "";
+    state.formacao.forEach(function(item){
+      var block = makeSimpleRow(
+        [{key:"instituicao", label:"Instituição", list:"institutionOptions"}, {key:"curso", label:"Curso", list:"courseOptions"}, {key:"periodo", label:"Período", placeholder:"2018–2022"}],
+        item, function(){ state.formacao = state.formacao.filter(function(x){return x._id!==item._id;}); renderEdu(); });
+      block.dataset.id = item._id;
+      wrap.appendChild(block);
+    });
+  }
+  document.getElementById("btnAddEdu").addEventListener("click", function(){
+    syncStateFromForm();
+    state.formacao.push({_id:nextId(), instituicao:"", curso:"", periodo:""});
+    renderEdu();
+  });
+
+  function renderCert(){
+    var wrap = document.getElementById("certList");
+    wrap.innerHTML = "";
+    state.certificacoes.forEach(function(item){
+      var block = makeSimpleRow(
+        [{key:"nome", label:"Certificação", list:"certNameOptions"}, {key:"instituicao", label:"Instituição / Emissor", list:"certIssuerOptions"}, {key:"ano", label:"Ano"}],
+        item, function(){ state.certificacoes = state.certificacoes.filter(function(x){return x._id!==item._id;}); renderCert(); });
+      block.dataset.id = item._id;
+      wrap.appendChild(block);
+    });
+  }
+  document.getElementById("btnAddCert").addEventListener("click", function(){
+    syncStateFromForm();
+    state.certificacoes.push({_id:nextId(), nome:"", instituicao:"", ano:""});
+    renderCert();
+  });
+
+  function renderLang(){
+    var wrap = document.getElementById("langList");
+    wrap.innerHTML = "";
+    state.idiomas.forEach(function(item){
+      var block = makeSimpleRow(
+        [{key:"idioma", label:"Idioma", list:"languageOptions"}, {key:"nivel", label:"Nível", list:"languageLevelOptions", placeholder:"Fluente, Avançado, Intermediário..."}],
+        item, function(){ state.idiomas = state.idiomas.filter(function(x){return x._id!==item._id;}); renderLang(); });
+      block.dataset.id = item._id;
+      wrap.appendChild(block);
+    });
+  }
+  document.getElementById("btnAddLang").addEventListener("click", function(){
+    syncStateFromForm();
+    state.idiomas.push({_id:nextId(), idioma:"", nivel:""});
+    renderLang();
+  });
+
+  /* ---------------------------------------------------------------
+   * SYNC FORM -> STATE
+   * ------------------------------------------------------------- */
+  function val(id){ var el = document.getElementById(id); return el ? el.value : ""; }
+
+  function syncStateFromForm(){
+    state.contato.nome = val("c_nome");
+    state.contato.cargoAlvo = val("c_cargoAlvo");
+    state.contato.local = val("c_local");
+    state.contato.email = val("c_email");
+    state.contato.tel = val("c_tel");
+    state.contato.linkedin = val("c_linkedin");
+    state.contato.portfolio = val("c_portfolio");
+    state.resumo = val("c_resumo");
+
+    document.querySelectorAll("#expList .item-block").forEach(function(block){
+      var id = block.dataset.id;
+      var exp = state.experiencias.find(function(e){ return e._id === id; });
+      if (!exp) return;
+      exp.empresa = block.querySelector(".f-empresa").value;
+      exp.cargo = block.querySelector(".f-cargo").value;
+      exp.inicio = block.querySelector(".f-inicio").value;
+      exp.fim = block.querySelector(".f-fim").value;
+      exp.local = block.querySelector(".f-local").value;
+      var bulletRows = block.querySelectorAll(".bullet-row");
+      bulletRows.forEach(function(row, i){
+        if (exp.bullets[i]) {
+          exp.bullets[i].texto = row.querySelector(".f-bullet-texto").value;
+          exp.bullets[i].tags = row.querySelector(".f-bullet-tags").value;
+          exp.bullets[i].destaque = row.querySelector(".f-bullet-destaque").checked;
+        }
+      });
+    });
+
+    document.querySelectorAll("#eduList .item-block").forEach(function(block){
+      var item = state.formacao.find(function(x){ return x._id === block.dataset.id; });
+      if (!item) return;
+      item.instituicao = block.querySelector(".f-instituicao").value;
+      item.curso = block.querySelector(".f-curso").value;
+      item.periodo = block.querySelector(".f-periodo").value;
+    });
+    document.querySelectorAll("#certList .item-block").forEach(function(block){
+      var item = state.certificacoes.find(function(x){ return x._id === block.dataset.id; });
+      if (!item) return;
+      item.nome = block.querySelector(".f-nome").value;
+      item.instituicao = block.querySelector(".f-instituicao").value;
+      item.ano = block.querySelector(".f-ano").value;
+    });
+    document.querySelectorAll("#langList .item-block").forEach(function(block){
+      var item = state.idiomas.find(function(x){ return x._id === block.dataset.id; });
+      if (!item) return;
+      item.idioma = block.querySelector(".f-idioma").value;
+      item.nivel = block.querySelector(".f-nivel").value;
+    });
+  }
+
+  function syncFormFromState(){
+    document.getElementById("c_nome").value = state.contato.nome || "";
+    document.getElementById("c_cargoAlvo").value = state.contato.cargoAlvo || "";
+    document.getElementById("c_local").value = state.contato.local || "";
+    document.getElementById("c_email").value = state.contato.email || "";
+    document.getElementById("c_tel").value = state.contato.tel || "";
+    document.getElementById("c_linkedin").value = state.contato.linkedin || "";
+    document.getElementById("c_portfolio").value = state.contato.portfolio || "";
+    document.getElementById("c_resumo").value = state.resumo || "";
+    renderSkills();
+    renderExperiences();
+    renderEdu();
+    renderCert();
+    renderLang();
+  }
+
+  /* ---------------------------------------------------------------
+   * IMPORT FROM PDF / WORD (text extraction only, best-effort autofill)
+   * ------------------------------------------------------------- */
+  document.getElementById("resumeFileInput").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var ext = file.name.split(".").pop().toLowerCase();
+    var statusEl = document.getElementById("importStatus");
+    statusEl.textContent = "Extraindo texto...";
+
+    function done(text){
+      document.getElementById("extractedText").value = (text||"").trim();
+      var words = (text||"").trim().split(/\s+/).filter(Boolean).length;
+      statusEl.textContent = words ? ("Texto extraído (" + words + " palavras). Revise abaixo e copie os trechos para os campos certos.") : "Não encontrei texto neste arquivo (pode ser um PDF escaneado/imagem).";
+    }
+    function fail(err){ statusEl.textContent = "Não consegui ler este arquivo: " + (err && err.message ? err.message : err); }
+
+    if (ext === "pdf"){
+      file.arrayBuffer().then(function(buf){
+        if (!window.__pdfjsReady){ statusEl.textContent = "O leitor de PDF ainda está carregando — aguarde alguns segundos e tente de novo."; return; }
+        window.__extractPdfText(buf).then(done).catch(fail);
+      }).catch(fail);
+    } else if (ext === "docx"){
+      file.arrayBuffer().then(function(buf){
+        if (typeof mammoth === "undefined"){ statusEl.textContent = "O leitor de Word ainda está carregando — aguarde alguns segundos e tente de novo."; return; }
+        mammoth.extractRawText({ arrayBuffer: buf }).then(function(res){ done(res.value); }).catch(fail);
+      }).catch(fail);
+    } else if (ext === "doc"){
+      statusEl.textContent = "Arquivos .doc antigos (Word 97-2003) não são suportados. Salve como .docx ou PDF e tente de novo, ou cole o texto direto na caixa abaixo.";
+    } else if (ext === "txt"){
+      file.text().then(done).catch(fail);
+    } else {
+      statusEl.textContent = "Formato não suportado. Use PDF, DOCX ou TXT.";
+    }
+  });
+
+  document.getElementById("btnAutoFillFromText").addEventListener("click", function(){
+    var text = document.getElementById("extractedText").value;
+    if (!text.trim()) { alert("Extraia ou cole um texto primeiro."); return; }
+    var emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+    var phoneMatch = text.match(/(\+?\d{1,3}[\s.-]?)?\(?\d{2,3}\)?[\s.-]?\d{4,5}[\s.-]?\d{4}/);
+    var linkedinMatch = text.match(/linkedin\.com\/in\/[A-Za-z0-9\-_]+/i);
+    var lines = text.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+    var possibleName = lines.length ? lines[0].replace(/[|,•].*$/,"").trim() : "";
+
+    if (emailMatch) document.getElementById("c_email").value = emailMatch[0];
+    if (phoneMatch) document.getElementById("c_tel").value = phoneMatch[0].trim();
+    if (linkedinMatch) document.getElementById("c_linkedin").value = "https://www." + linkedinMatch[0].replace(/^https?:\/\/(www\.)?/i, "");
+    if (possibleName && possibleName.length < 60 && !document.getElementById("c_nome").value) document.getElementById("c_nome").value = possibleName;
+    syncStateFromForm();
+    alert("Preenchi automaticamente só o que dá para confiar (nome, e-mail, telefone, LinkedIn) — confira se veio certo. Resumo, habilidades e experiências: copie os trechos do texto extraído para os campos certos nas seções abaixo, ou envie o texto para o Claude no chat e peça o .json pronto.");
+  });
+
+  document.getElementById("btnCopyExtracted").addEventListener("click", function(){
+    var text = document.getElementById("extractedText").value;
+    if (!text.trim()) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+      var btn = document.getElementById("btnCopyExtracted");
+      var old = btn.textContent; btn.textContent = "Copiado!";
+      setTimeout(function(){ btn.textContent = old; }, 1500);
+    }
+  });
+
+  /* ---------------------------------------------------------------
+   * FILE-BACKED SAVE / OPEN (File System Access API — real file I/O,
+   * not browser storage). Falls back to download/upload where unsupported.
+   * ------------------------------------------------------------- */
+  var fileHandle = null;
+  var isDirty = false;
+  var fsSupported = "showOpenFilePicker" in window && "showSaveFilePicker" in window;
+
+  function setDirty(v){
+    isDirty = v;
+    var badge = document.getElementById("dirtyBadge");
+    if (!badge) return;
+    badge.textContent = v ? "· alterações não salvas" : (fileHandle ? "· salvo" : "");
+    badge.style.color = v ? "var(--serious)" : "var(--text-secondary)";
+  }
+  // Mark dirty on any edit within the base tab (event delegation covers dynamically added rows too)
+  document.getElementById("panel-base").addEventListener("input", function(e){
+    if (e.target.id === "extractedText") return; // scratch area, not part of saved data
+    setDirty(true);
+  });
+  document.getElementById("panel-base").addEventListener("change", function(e){
+    if (e.target.id === "extractedText" || e.target.id === "resumeFileInput") return;
+    setDirty(true);
+  });
+
+  if (!fsSupported) {
+    document.getElementById("btnOpenFile").textContent = "⬆ Carregar dados-base (.json)";
+    document.getElementById("btnSaveFile").textContent = "⬇ Baixar dados-base (.json)";
+  }
+
+  document.getElementById("btnOpenFile").addEventListener("click", async function(){
+    if (!fsSupported) { document.getElementById("btnImportJson").click(); return; }
+    if (isDirty && !confirm("Você tem alterações não salvas. Abrir outro arquivo agora vai descartá-las. Continuar?")) return;
+    try {
+      var handles = await window.showOpenFilePicker({
+        types: [{ description: "Currículo-base (JSON)", accept: { "application/json": [".json"] } }]
+      });
+      fileHandle = handles[0];
+      var file = await fileHandle.getFile();
+      var text = await file.text();
+      applyLoadedData(JSON.parse(text));
+      setDirty(false);
+    } catch (err) {
+      if (err && err.name !== "AbortError") alert("Não foi possível abrir o arquivo: " + err.message);
+    }
+  });
+
+  document.getElementById("btnSaveFile").addEventListener("click", async function(){
+    syncStateFromForm();
+    if (!fsSupported) {
+      document.getElementById("btnExportJson").click();
+      return;
+    }
+    try {
+      if (!fileHandle) {
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: "curriculo-base.json",
+          types: [{ description: "Currículo-base (JSON)", accept: { "application/json": [".json"] } }]
+        });
+      }
+      var writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(state, null, 2));
+      await writable.close();
+      setDirty(false);
+    } catch (err) {
+      if (err && err.name !== "AbortError") alert("Não foi possível salvar: " + err.message);
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      document.getElementById("btnSaveFile").click();
+    }
+  });
+
+  /* ---------------------------------------------------------------
+   * JSON EXPORT / IMPORT (fallback path for browsers without File System Access API)
+   * ------------------------------------------------------------- */
+  document.getElementById("btnExportJson").addEventListener("click", function(){
+    syncStateFromForm();
+    var blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    downloadBlob(blob, "curriculo-base.json");
+  });
+  document.getElementById("btnImportJsonTrigger").addEventListener("click", function(){
+    document.getElementById("btnImportJson").click();
+  });
+  document.getElementById("btnImportJson").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        fileHandle = null;
+        applyLoadedData(data);
+        setDirty(false);
+      } catch (err) {
+        alert("Não foi possível ler este arquivo JSON: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+  function applyLoadedData(data){
+    state.contato = Object.assign({nome:"",cargoAlvo:"",local:"",email:"",tel:"",linkedin:"",portfolio:""}, data.contato||{});
+    state.resumo = data.resumo || "";
+    state.habilidades = (data.habilidades || []).map(function(h){
+      if (typeof h === "string") return { _id: nextId(), nome: h, categoria: "Habilidades" };
+      h._id = h._id || nextId();
+      h.categoria = h.categoria || "Habilidades";
+      return h;
+    });
+    state.experiencias = (data.experiencias||[]).map(function(exp){
+      exp._id = exp._id || nextId();
+      exp.bullets = (exp.bullets||[]).map(function(b){ b._id = b._id || nextId(); return b; });
+      return exp;
+    });
+    state.formacao = (data.formacao||[]).map(function(x){ x._id = x._id || nextId(); return x; });
+    state.certificacoes = (data.certificacoes||[]).map(function(x){ x._id = x._id || nextId(); return x; });
+    state.idiomas = (data.idiomas||[]).map(function(x){ x._id = x._id || nextId(); return x; });
+    syncFormFromState();
+  }
+
+  document.getElementById("btnLoadExample").addEventListener("click", function(){
+    if (state.experiencias.length && !confirm("Isso vai substituir os dados atuais pelo exemplo. Continuar?")) return;
+    fileHandle = null;
+    applyLoadedData(exampleData());
+    setDirty(true);
+  });
+
+  function exampleData(){
+    return {
+      contato: { nome:"Maria Exemplo", cargoAlvo:"Analista de Marketing Pleno", local:"São Paulo, SP", email:"maria@email.com", tel:"(11) 99999-0000", linkedin:"linkedin.com/in/mariaexemplo", portfolio:"" },
+      resumo: "Profissional de marketing com 6 anos de experiência em campanhas digitais, gestão de redes sociais e análise de métricas de performance.",
+      habilidades: [
+        {nome:"Google Ads", categoria:"Marketing Digital"}, {nome:"Meta Ads", categoria:"Marketing Digital"},
+        {nome:"SEO", categoria:"Marketing Digital"}, {nome:"Email marketing", categoria:"Marketing Digital"},
+        {nome:"Copywriting", categoria:"Marketing Digital"},
+        {nome:"Google Analytics", categoria:"Sistemas e Ferramentas"}, {nome:"Excel avançado", categoria:"Sistemas e Ferramentas"},
+        {nome:"Power BI", categoria:"Sistemas e Ferramentas"}, {nome:"CRM (HubSpot)", categoria:"Sistemas e Ferramentas"},
+        {nome:"Gestão de equipes", categoria:"Comportamentais"}, {nome:"Comunicação com stakeholders", categoria:"Comportamentais"}
+      ],
+      experiencias: [
+        { empresa:"Empresa Atual Ltda", cargo:"Analista de Marketing Pleno", inicio:"03/2022", fim:"Atual", local:"São Paulo, SP",
+          bullets:[
+            {texto:"Aumentei o tráfego orgânico do site em 45% em 12 meses por meio de estratégia de SEO e conteúdo.", tags:"seo, conteúdo, tráfego", destaque:true},
+            {texto:"Geri budget mensal de R$80 mil em campanhas de Google Ads e Meta Ads, reduzindo o CAC em 22%.", tags:"google ads, meta ads, cac, budget", destaque:true},
+            {texto:"Implementei dashboards de performance em Power BI, reduzindo o tempo de geração de relatórios de 3 dias para 2 horas.", tags:"power bi, dashboard, relatórios", destaque:false},
+            {texto:"Coordenei equipe de 3 analistas juniores.", tags:"gestão de equipes, liderança", destaque:false}
+          ] },
+        { empresa:"Empresa Anterior S.A.", cargo:"Assistente de Marketing", inicio:"01/2019", fim:"02/2022", local:"São Paulo, SP",
+          bullets:[
+            {texto:"Apoiei o planejamento de campanhas de email marketing, atingindo taxa de abertura 18% acima da média do setor.", tags:"email marketing, hubspot, crm", destaque:false},
+            {texto:"Produzi conteúdo para redes sociais, crescendo a base de seguidores em 30 mil em um ano.", tags:"redes sociais, conteúdo", destaque:false}
+          ] }
+      ],
+      formacao: [ {instituicao:"Universidade Exemplo", curso:"Bacharelado em Marketing", periodo:"2015–2018"} ],
+      certificacoes: [ {nome:"Google Ads Certification", instituicao:"Google", ano:"2023"}, {nome:"Inbound Marketing", instituicao:"HubSpot Academy", ano:"2022"} ],
+      idiomas: [ {idioma:"Inglês", nivel:"Avançado"}, {idioma:"Espanhol", nivel:"Intermediário"} ]
+    };
+  }
+
+  /* ---------------------------------------------------------------
+   * UTIL
+   * ------------------------------------------------------------- */
+  function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+  function downloadBlob(blob, filename){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+  function stripAccents(s){
+    return (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"");
+  }
+  function norm(s){ return stripAccents((s||"").toLowerCase()); }
+  var KNOWN_ACRONYMS = ["seo","crm","erp","kpi","kpis","roi","ats","hr","rh","bi","b2b","b2c","ti","sql","api","ux","ui","css","html","php","aws","gcp","pmo","p&l"];
+  function titleCaseWords(s){
+    return (s||"").split(/\s+/).map(function(w){
+      var clean = w.toLowerCase();
+      if (KNOWN_ACRONYMS.indexOf(clean) !== -1) return clean.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(" ");
+  }
+
+  /* ---------------------------------------------------------------
+   * KEYWORD ANALYSIS ENGINE
+   * ------------------------------------------------------------- */
+  var STOPWORDS_PT = ("de a o que e do da em um para com nao uma os no se na por mais as dos como mas ao ele das seu sua ou ser quando muito ha nos ja esta eu tambem so pelo pela ate isso ela entre depois sem mesmo aos seus quem nas me esse eles voce essa num nem suas meu as minha numa pelos elas qual sera nossa nosso nossas nossos dela dele dela dele questo essas outras outro outras outros isto aquele aquela ate onde vamos vai sao tem tera podem pode ser devera ira sobre entre durante atraves este esta estes estas ate cada todo toda todos todas outro qualquer quaisquer alguns algumas algum alguma nenhuma nenhum apos antes desde vaga empresa buscamos procura procuramos oferecemos oportunidade requisitos responsabilidades diferenciais desejavel obrigatorio necessario atividades experiencia conhecimento conhecimentos area setor equipe trabalho local horario salario beneficios contratacao pj clt").split(" ");
+  var STOPWORDS_EN = ("the a an and or of to in for on with is are be as at by from that this these those you your we our will would should can could must have has had it its as an about into over under between within without job role company we're looking seeking opportunity requirements responsibilities preferred required nice have skills experience knowledge team work location salary benefits full time part remote hybrid").split(" ");
+  var STOPSET = {};
+  STOPWORDS_PT.concat(STOPWORDS_EN).forEach(function(w){ STOPSET[norm(w)] = true; });
+
+  var ACTION_VERBS = ("liderei lideirei geri gerenciei coordenei implementei desenvolvi criei construi construi reduzi aumentei melhorei otimizei automatizei conduzi executei planejei estruturei negociei elaborei analisei apresentei entreguei lancei escalei mapear identifiquei resolvi economizei conquistei alcancei superei treinei capacitei supervisionei revisei formulei projetei integrei migrei implantei padronizei diagnostiquei prospectei fechei vendi expandi captei recrutei mentorei documentei automatizei led managed developed built created reduced increased improved optimized automated drove executed planned designed negotiated analyzed presented delivered launched scaled identified solved saved achieved exceeded trained coached supervised reviewed formulated engineered integrated migrated deployed standardized diagnosed prospected closed sold expanded recruited mentored documented spearheaded orchestrated").split(" ");
+  var ACTION_VERB_SET = {};
+  ACTION_VERBS.forEach(function(v){ ACTION_VERB_SET[norm(v)] = true; });
+
+  var CLICHES = ["proativo","proativa","dinamico","dinamica","excelente comunicacao","facilidade de relacionamento","trabalho em equipe","sinergia","fora da caixa","multitarefas","team player","hard worker","detail oriented","results driven","go-getter","pensar fora da caixa","boa comunicacao","organizado","organizada","comprometido","comprometida"];
+  var WEAK_PATTERNS = [/respons[aá]vel por/i, /encarregad[oa] de/i, /ajudei a/i, /participei de/i, /apoiei/i, /responsible for/i, /in charge of/i, /helped with/i, /assisted in/i];
+  var HIGH_PRIORITY_MARKERS = ["obrigatorio","obrigatorios","requisito","requisitos","necessario","necessarios","must have","required","requirement","requirements","qualifications","qualificacoes"];
+  var MED_PRIORITY_MARKERS = ["desejavel","desejaveis","diferencial","diferenciais","plus","nice to have","preferred","preferencial"];
+
+  function tokenizeLine(line){
+    return line.split(/[^a-zA-ZÀ-ÿ0-9\+\#]+/).filter(Boolean);
+  }
+
+  function detectPriority(line){
+    var l = norm(line);
+    for (var i=0;i<HIGH_PRIORITY_MARKERS.length;i++){ if (l.indexOf(HIGH_PRIORITY_MARKERS[i])!==-1) return 2; }
+    for (var j=0;j<MED_PRIORITY_MARKERS.length;j++){ if (l.indexOf(MED_PRIORITY_MARKERS[j])!==-1) return 1; }
+    return 0;
+  }
+
+  function extractKeywords(jdText){
+    var lines = jdText.split(/\n+/);
+    var freq = {}; // norm-token -> {weight, display}
+    var currentPriority = 0;
+
+    function bump(tokenDisplay, weight){
+      var key = norm(tokenDisplay);
+      if (!key || key.length < 3 || STOPSET[key]) return;
+      if (!freq[key]) freq[key] = { weight:0, display:tokenDisplay };
+      freq[key].weight += weight;
+    }
+
+    lines.forEach(function(line){
+      var p = detectPriority(line);
+      if (p > 0) currentPriority = p;
+      if (line.trim() === "") { /* keep priority across blank lines within a block */ }
+      var lineWeight = 1 + currentPriority; // 1, 2 or 3
+      var tokens = tokenizeLine(line);
+      var cleanTokens = tokens.filter(function(t){ return norm(t).length >= 3 && !STOPSET[norm(t)]; });
+
+      cleanTokens.forEach(function(t){
+        var isAcronym = /^[A-Z]{2,6}(\+\+)?$/.test(t);
+        bump(t.toLowerCase(), lineWeight + (isAcronym ? 2 : 0));
+      });
+      // bigrams from the raw (non-stopword-filtered) sequence, to catch phrases like "power bi"
+      for (var i=0; i<tokens.length-1; i++){
+        var a = tokens[i], b = tokens[i+1];
+        if (norm(a).length<2 || norm(b).length<2) continue;
+        if (STOPSET[norm(a)] || STOPSET[norm(b)]) continue;
+        var phrase = a.toLowerCase() + " " + b.toLowerCase();
+        bump(phrase, lineWeight * 1.3);
+      }
+    });
+
+    var list = Object.keys(freq).map(function(k){ return { key:k, display:freq[k].display, weight:freq[k].weight }; });
+    list.sort(function(a,b){ return b.weight - a.weight; });
+    return list.slice(0, 45);
+  }
+
+  function textContains(haystackNorm, keywordNorm){
+    return haystackNorm.indexOf(keywordNorm) !== -1;
+  }
+
+  /* ---------------------------------------------------------------
+   * ANALYSIS + RESUME GENERATION
+   * ------------------------------------------------------------- */
+  var lastResult = null;
+
+  document.getElementById("btnAnalyze").addEventListener("click", function(){
+    syncStateFromForm();
+    var jd = document.getElementById("jdInput").value.trim();
+    var msg = document.getElementById("analyzeMsg");
+    if (!jd) { msg.textContent = "Cole a descrição da vaga antes de analisar."; return; }
+    if (!state.experiencias.length) { msg.textContent = "Cadastre pelo menos uma experiência na aba 1 antes de analisar."; return; }
+    msg.textContent = "";
+
+    var maxBullets = parseInt(document.getElementById("maxBullets").value, 10);
+    var maxSkills = parseInt(document.getElementById("maxSkills").value, 10);
+    var outLangSel = document.getElementById("outLang").value;
+    var lang = outLangSel === "auto" ? detectLang(jd) : outLangSel;
+
+    var keywords = extractKeywords(jd);
+
+    // score each skill
+    var scoredSkills = state.habilidades.map(function(skill){
+      var sNorm = norm(skill.nome);
+      var matchWeight = 0;
+      keywords.forEach(function(kw){
+        if (textContains(sNorm, kw.key) || textContains(kw.key, sNorm)) matchWeight += kw.weight;
+      });
+      return { skill:skill, weight:matchWeight };
+    });
+    scoredSkills.sort(function(a,b){ return b.weight - a.weight; });
+    var matchedSkills = scoredSkills.filter(function(s){ return s.weight > 0; });
+    var unmatchedSkills = scoredSkills.filter(function(s){ return s.weight === 0; });
+    var chosenSkills = matchedSkills.concat(unmatchedSkills).slice(0, maxSkills).map(function(s){return s.skill;});
+    var categoryOrder = skillCategoryOrder();
+    var chosenSkillsByCategory = categoryOrder.map(function(cat){
+      return { categoria: cat, skills: chosenSkills.filter(function(s){ return s.categoria === cat; }).map(function(s){ return s.nome; }) };
+    }).filter(function(g){ return g.skills.length > 0; });
+
+    // score + select bullets per experience
+    var expResults = state.experiencias.map(function(exp){
+      var scoredBullets = exp.bullets.filter(function(b){ return b.texto && b.texto.trim(); }).map(function(b, idx){
+        var bNorm = norm(b.texto) + " " + norm(b.tags);
+        var weight = 0;
+        keywords.forEach(function(kw){ if (textContains(bNorm, kw.key)) weight += kw.weight; });
+        return { bullet:b, idx:idx, weight:weight };
+      });
+      var sorted = scoredBullets.slice().sort(function(a,b){ return b.weight - a.weight; });
+      var chosen = [];
+      sorted.forEach(function(sb){
+        if (sb.bullet.destaque && chosen.indexOf(sb) === -1) chosen.push(sb);
+      });
+      sorted.forEach(function(sb){
+        if (chosen.length >= maxBullets) return;
+        if (chosen.indexOf(sb) === -1) chosen.push(sb);
+      });
+      chosen = chosen.slice(0, Math.max(maxBullets, chosen.filter(function(c){return c.bullet.destaque;}).length));
+      chosen.sort(function(a,b){ return a.idx - b.idx; });
+      return { exp:exp, bullets: chosen.map(function(c){ return c.bullet; }), allScored: scoredBullets };
+    });
+
+    // overall match score: sum weight of keywords found anywhere in chosen content vs total weight
+    var fullTextNorm = norm(
+      state.resumo + " " + chosenSkills.map(function(s){return s.nome;}).join(" ") + " " +
+      expResults.map(function(er){ return er.bullets.map(function(b){return b.texto+" "+b.tags;}).join(" "); }).join(" ")
+    );
+    var totalWeight = 0, matchedWeight = 0;
+    var kwStatus = keywords.map(function(kw){
+      totalWeight += kw.weight;
+      var found = textContains(fullTextNorm, kw.key);
+      if (found) matchedWeight += kw.weight;
+      return { display: kw.display, weight: kw.weight, matched: found };
+    });
+    var scorePct = totalWeight > 0 ? Math.round((matchedWeight / totalWeight) * 100) : 0;
+
+    // years of experience (best-effort)
+    var years = estimateYears(state.experiencias);
+
+    // build tailored summary (dedupe overlapping terms, e.g. "ads" inside "google ads"; title-case for readability)
+    var matchedDisplays = kwStatus.filter(function(k){return k.matched;}).map(function(k){return k.display;});
+    var dedupedKw = [];
+    matchedDisplays.forEach(function(d){
+      var isSubstringOfExisting = dedupedKw.some(function(c){ return c.indexOf(d) !== -1; });
+      if (isSubstringOfExisting) return;
+      dedupedKw = dedupedKw.filter(function(c){ return d.indexOf(c) === -1; });
+      dedupedKw.push(d);
+    });
+    var topKw = dedupedKw.slice(0,4).map(titleCaseWords);
+    var summary = buildSummary(lang, state, years, topKw, expResults);
+
+    lastResult = {
+      lang: lang, keywords: kwStatus, scorePct: scorePct, chosenSkills: chosenSkills,
+      chosenSkillsByCategory: chosenSkillsByCategory,
+      expResults: expResults, summary: summary, jd: jd
+    };
+
+    renderResults(lastResult);
+    document.querySelector('nav.tabs button[data-tab="resultado"]').click();
+  });
+
+  function detectLang(text){
+    var t = norm(text);
+    var enHits = 0, ptHits = 0;
+    ["the","and","you","must","experience","team","skills","work"].forEach(function(w){ if (t.indexOf(" "+w+" ")!==-1) enHits++; });
+    ["voce","experiencia","equipe","habilidades","trabalho","vaga","requisitos"].forEach(function(w){ if (t.indexOf(w)!==-1) ptHits++; });
+    return enHits > ptHits ? "en" : "pt";
+  }
+
+  function estimateYears(experiencias){
+    var years = [];
+    experiencias.forEach(function(exp){
+      var m1 = (exp.inicio||"").match(/(\d{4})/);
+      if (m1) years.push(parseInt(m1[1],10));
+      if (/atual/i.test(exp.fim)) years.push(new Date().getFullYear());
+      else { var m2 = (exp.fim||"").match(/(\d{4})/); if (m2) years.push(parseInt(m2[1],10)); }
+    });
+    if (!years.length) return null;
+    var span = Math.max.apply(null, years) - Math.min.apply(null, years);
+    return span > 0 ? span : 1;
+  }
+
+  function buildSummary(lang, state, years, topKw, expResults){
+    var cargo = state.contato.cargoAlvo || (state.experiencias[0] && state.experiencias[0].cargo) || "";
+    var flagship = "";
+    expResults.forEach(function(er){ if (!flagship && er.bullets.length) flagship = er.bullets[0].texto; });
+    if (lang === "en"){
+      var parts = [];
+      parts.push((cargo ? cargo : "Professional") + (years ? " with " + years + "+ years of experience" : ""));
+      if (topKw.length) parts.push("in " + topKw.join(", "));
+      var s = parts.join(" ") + ".";
+      if (flagship) s += " " + flagship;
+      return s;
+    } else {
+      var s2 = (cargo ? cargo : "Profissional") + (years ? " com " + years + "+ anos de experiência" : "");
+      if (topKw.length) s2 += " em " + topKw.join(", ");
+      s2 += ".";
+      if (flagship) s2 += " " + flagship;
+      return s2;
+    }
+  }
+
+  /* ---------------------------------------------------------------
+   * CRITIQUE (recruiter-style) + ATS CHECKLIST
+   * ------------------------------------------------------------- */
+  function buildCritique(result){
+    var checks = [];
+    var allBullets = [];
+    result.expResults.forEach(function(er){ er.bullets.forEach(function(b){ allBullets.push(b.texto); }); });
+    var total = allBullets.length;
+
+    // quantified metrics
+    var withMetric = allBullets.filter(function(t){ return /\d/.test(t); }).length;
+    var pctMetric = total ? Math.round((withMetric/total)*100) : 0;
+    checks.push(sevCheck(pctMetric >= 60 ? "ok" : (pctMetric >= 30 ? "warn" : "bad"),
+      pctMetric + "% dos bullets têm números/resultados mensuráveis",
+      pctMetric >= 60 ? "Bom nível de quantificação — recrutadores confiam mais em resultados com números." :
+      "Recrutadores duvidam de bullets sem métrica. Tente adicionar %, R$, tempo economizado ou volume onde for verdade."));
+
+    // action verbs
+    var withVerb = allBullets.filter(function(t){
+      var first = norm((t.trim().split(/\s+/)[0]||"").replace(/[^a-zA-ZÀ-ÿ]/g,""));
+      return ACTION_VERB_SET[first];
+    }).length;
+    var pctVerb = total ? Math.round((withVerb/total)*100) : 0;
+    checks.push(sevCheck(pctVerb >= 70 ? "ok" : (pctVerb >= 40 ? "warn" : "bad"),
+      pctVerb + "% dos bullets começam com verbo de ação forte",
+      pctVerb >= 70 ? "Boa construção — bullets no formato \"verbo de ação + resultado\" são o padrão que recrutadores esperam." :
+      "Comece cada bullet com um verbo de ação (liderei, reduzi, implementei...) em vez de descrições passivas."));
+
+    // weak / passive patterns
+    var weakHits = allBullets.filter(function(t){ return WEAK_PATTERNS.some(function(p){ return p.test(t); }); });
+    checks.push(sevCheck(weakHits.length === 0 ? "ok" : "warn",
+      weakHits.length + " bullet(s) com linguagem passiva/fraca (ex.: \"responsável por\")",
+      weakHits.length === 0 ? "Nenhuma linguagem passiva detectada." :
+      "Troque \"responsável por X\" pelo verbo direto do que você fez e o resultado alcançado."));
+
+    // clichés
+    var fullText = norm(allBullets.join(" ") + " " + result.summary);
+    var clicheHits = CLICHES.filter(function(c){ return fullText.indexOf(norm(c)) !== -1; });
+    checks.push(sevCheck(clicheHits.length === 0 ? "ok" : "warn",
+      clicheHits.length === 0 ? "Nenhum clichê genérico encontrado" : "Clichê(s) detectado(s): " + clicheHits.join(", "),
+      clicheHits.length === 0 ? "" : "Termos genéricos como esses não convencem recrutadores sem evidência concreta ao lado."));
+
+    // first person
+    var firstPerson = /\b(eu|meu|minha|my|i)\b/i.test(allBullets.join(" ") + " " + result.summary);
+    checks.push(sevCheck(firstPerson ? "warn" : "ok",
+      firstPerson ? "Uso de pronomes em primeira pessoa detectado" : "Sem pronomes em primeira pessoa",
+      firstPerson ? "Currículos não usam \"eu\"/\"meu\" — comece direto pelo verbo." : ""));
+
+    // length
+    var wordCount = (allBullets.join(" ") + " " + result.summary).split(/\s+/).filter(Boolean).length;
+    checks.push(sevCheck(wordCount > 700 ? "warn" : (wordCount < 80 ? "warn" : "ok"),
+      wordCount + " palavras no conteúdo principal",
+      wordCount > 700 ? "Pode estar longo demais — recrutadores gastam poucos segundos na primeira leitura. Considere cortar bullets de menor impacto." :
+      (wordCount < 80 ? "Pode estar curto demais para transmitir seu histórico — considere detalhar mais realizações." : "Extensão dentro do razoável para 1–2 páginas.")));
+
+    // missing top keywords (gap)
+    var missing = result.keywords.filter(function(k){ return !k.matched; }).slice(0,8).map(function(k){return k.display;});
+    checks.push(sevCheck(missing.length === 0 ? "ok" : "warn",
+      missing.length === 0 ? "Nenhuma palavra-chave importante da vaga está ausente" : "Termos da vaga ausentes: " + missing.join(", "),
+      missing.length === 0 ? "" : "Só inclua esses termos se forem verdadeiros na sua experiência — nunca invente competências."));
+
+    return checks;
+  }
+
+  function sevCheck(sev, title, desc){
+    return { sev:sev, title:title, desc:desc };
+  }
+
+  function buildAtsChecklist(result){
+    var checks = [];
+    checks.push(sevCheck("ok", "Layout em coluna única, sem tabelas ou colunas", "Robôs de triagem (ATS) frequentemente embaralham o texto de currículos em colunas ou tabelas."));
+    checks.push(sevCheck("ok", "Sem imagens, ícones ou gráficos", "Elementos visuais não são lidos pelo ATS e podem quebrar o parsing."));
+    checks.push(sevCheck("ok", "Fontes padrão (Arial) e marcadores simples (•)", "Fontes exóticas e ícones customizados podem virar caracteres ilegíveis para o robô."));
+    checks.push(sevCheck("ok", "Títulos de seção padronizados (Resumo, Experiência, Habilidades, Formação)", "ATS procura por títulos-padrão para classificar as seções — nomes criativos ("+"\"Minha jornada\""+") confundem o parsing."));
+
+    var c = state.contato;
+    var contactOk = c.nome && c.email && c.tel;
+    checks.push(sevCheck(contactOk ? "ok" : "bad",
+      contactOk ? "Dados de contato completos" : "Faltam dados de contato essenciais",
+      contactOk ? "" : "Preencha nome, e-mail e telefone na aba 1 — sem isso o recrutador não consegue te chamar."));
+    checks.push(sevCheck(c.linkedin ? "ok" : "warn",
+      c.linkedin ? "LinkedIn informado" : "LinkedIn não informado",
+      c.linkedin ? "" : "A maioria dos recrutadores confere o LinkedIn antes de ligar — vale adicionar."));
+
+    var datesOk = state.experiencias.every(function(e){ return /\d{2}\/\d{4}/.test(e.inicio) && (/atual/i.test(e.fim) || /\d{2}\/\d{4}/.test(e.fim)); });
+    checks.push(sevCheck(datesOk ? "ok" : "warn",
+      datesOk ? "Datas em formato consistente (mm/aaaa)" : "Datas fora do padrão mm/aaaa em alguma experiência",
+      datesOk ? "" : "ATS e recrutadores esperam datas consistentes — ajuste para o formato mm/aaaa (ex.: 03/2022) na aba 1."));
+
+    checks.push(sevCheck("warn", "Ao exportar, prefira .docx ou PDF com texto selecionável",
+      "Nunca envie currículo como imagem escaneada ou PDF de imagem — o ATS não consegue ler texto em imagem. Use o botão \"Imprimir / Salvar como PDF\" (gera PDF com texto real) ou copie o texto para o formato exigido pelo site da vaga."));
+    checks.push(sevCheck("warn", "Nomeie o arquivo de forma profissional",
+      "Sugestão: " + (state.contato.nome ? state.contato.nome.replace(/\s+/g,"_") : "Nome_Sobrenome") + "_Curriculo.pdf — evite nomes genéricos como \"CV final (2) (1).pdf\"."));
+
+    return checks;
+  }
+
+  /* ---------------------------------------------------------------
+   * RENDER RESULTS
+   * ------------------------------------------------------------- */
+  function scoreColor(pct){
+    if (pct >= 80) return "var(--good)";
+    if (pct >= 60) return "var(--warning)";
+    if (pct >= 40) return "var(--serious)";
+    return "var(--critical)";
+  }
+  function scoreText(pct){
+    if (pct >= 80) return "Boa aderência à vaga.";
+    if (pct >= 60) return "Aderência razoável — dá para reforçar alguns pontos.";
+    if (pct >= 40) return "Aderência fraca — revise as lacunas de palavras-chave abaixo.";
+    return "Aderência muito fraca — currículo e vaga parecem bem diferentes.";
+  }
+
+  function renderResults(result){
+    document.getElementById("scoreCard").style.display = "block";
+    document.getElementById("critiqueCard").style.display = "block";
+    document.getElementById("atsCard").style.display = "block";
+    document.getElementById("resumeCard").style.display = "block";
+
+    var pct = result.scorePct;
+    document.getElementById("scoreFigure").textContent = pct + "%";
+    document.getElementById("scoreFigure").style.color = scoreColor(pct);
+    document.getElementById("scoreMeterFill").style.width = pct + "%";
+    document.getElementById("scoreMeterFill").style.background = scoreColor(pct);
+    document.getElementById("scoreLabel").textContent = scoreText(pct);
+
+    var kwWrap = document.getElementById("kwList");
+    kwWrap.innerHTML = "";
+    result.keywords.slice(0, 30).forEach(function(k){
+      var chip = document.createElement("span");
+      chip.className = "kw-chip " + (k.matched ? "matched" : "missing");
+      chip.textContent = k.display;
+      kwWrap.appendChild(chip);
+    });
+
+    renderChecks("critiqueList", buildCritique(result));
+    renderChecks("atsList", buildAtsChecklist(result));
+
+    renderResumePreview(result);
+  }
+
+  function renderChecks(containerId, checks){
+    var wrap = document.getElementById(containerId);
+    wrap.innerHTML = "";
+    checks.forEach(function(c){
+      var row = document.createElement("div");
+      row.className = "check-item";
+      var icon = c.sev === "ok" ? "✓" : (c.sev === "warn" ? "!" : "✕");
+      row.innerHTML =
+        '<span class="check-icon ' + c.sev + '">'+icon+'</span>' +
+        '<span class="check-text"><b></b><span></span></span>';
+      row.querySelector(".check-text b").textContent = c.title;
+      row.querySelector(".check-text span").textContent = c.desc || "";
+      wrap.appendChild(row);
+    });
+  }
+
+  function buildResumeHtml(result){
+    var c = state.contato;
+    var contactBits = [c.local, c.tel, c.email, c.linkedin, c.portfolio].filter(Boolean);
+    var html = '<div class="resume-doc">';
+    html += '<div class="resume-header">';
+    html += '<h1>' + escapeHtml((c.nome || "Seu Nome").toUpperCase()) + '</h1>';
+    if (c.cargoAlvo) html += '<div class="resume-subtitle">' + escapeHtml(c.cargoAlvo) + '</div>';
+    html += '<div class="contact-line">' + escapeHtml(contactBits.join(" | ")) + '</div>';
+    html += '</div>';
+
+    var H = result.lang === "en"
+      ? { resumo:"Professional Summary", skills:"Skills & Competencies", exp:"Professional Experience", edu:"Education", cert:"Courses & Certifications", lang:"Languages" }
+      : { resumo:"Resumo Profissional", skills:"Habilidades e Competências", exp:"Experiência Profissional", edu:"Formação Acadêmica", cert:"Cursos e Certificações", lang:"Idiomas" };
+
+    html += '<h2>' + H.resumo + '</h2><div>' + escapeHtml(result.summary) + '</div>';
+
+    html += '<h2>' + H.exp + '</h2>';
+    result.expResults.forEach(function(er){
+      var exp = er.exp;
+      if (!er.bullets.length && !exp.empresa && !exp.cargo) return;
+      html += '<div class="exp-block">';
+      html += '<div class="exp-head">' + escapeHtml(exp.cargo) + ' | ' + escapeHtml(exp.empresa.toUpperCase()) + ' <span class="exp-dates">- ' + escapeHtml(exp.inicio) + ' – ' + escapeHtml(exp.fim) + '</span></div>';
+      if (exp.local) html += '<div class="exp-sub">' + escapeHtml(exp.local) + '</div>';
+      if (er.bullets.length){
+        html += '<ul>';
+        er.bullets.forEach(function(b){ html += '<li>' + escapeHtml(b.texto) + '</li>'; });
+        html += '</ul>';
+      }
+      html += '</div>';
+    });
+
+    if (state.formacao.length){
+      html += '<h2>' + H.edu + '</h2>';
+      state.formacao.forEach(function(f){
+        if (!f.instituicao && !f.curso) return;
+        html += '<div class="exp-block"><div class="exp-head" style="font-size:12.5px;">' + escapeHtml(f.curso) + ' | ' + escapeHtml(f.instituicao) + ' <span class="exp-dates">- ' + escapeHtml(f.periodo) + '</span></div></div>';
+      });
+    }
+    if (state.certificacoes.length){
+      html += '<h2>' + H.cert + '</h2><div class="skills-line">' + escapeHtml(state.certificacoes.filter(function(x){return x.nome;}).map(function(x){ return x.nome + (x.instituicao ? " ("+x.instituicao+(x.ano?", "+x.ano:"")+")" : ""); }).join(" · ")) + '</div>';
+    }
+    if (state.idiomas.length){
+      html += '<h2>' + H.lang + '</h2><div class="skills-line">' + escapeHtml(state.idiomas.filter(function(x){return x.idioma;}).map(function(x){ return x.idioma + (x.nivel ? " – "+x.nivel : ""); }).join(" · ")) + '</div>';
+    }
+
+    if (result.chosenSkillsByCategory && result.chosenSkillsByCategory.length){
+      html += '<h2>' + H.skills + '</h2>';
+      result.chosenSkillsByCategory.forEach(function(group){
+        html += '<div class="skill-group"><div class="skill-cat">' + escapeHtml(group.categoria) + '</div>';
+        html += '<div class="skills-line">' + escapeHtml(group.skills.join(" · ")) + '</div></div>';
+      });
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function renderResumePreview(result){
+    var html = buildResumeHtml(result);
+    document.getElementById("resumePreview").innerHTML = html;
+    document.getElementById("printArea").innerHTML = html;
+  }
+
+  function resumeToPlainText(result){
+    var c = state.contato;
+    var lines = [];
+    lines.push((c.nome || "Seu Nome").toUpperCase());
+    if (c.cargoAlvo) lines.push(c.cargoAlvo);
+    lines.push([c.local, c.tel, c.email, c.linkedin, c.portfolio].filter(Boolean).join(" | "));
+    lines.push("");
+    var H = result.lang === "en"
+      ? { resumo:"PROFESSIONAL SUMMARY", skills:"SKILLS & COMPETENCIES", exp:"PROFESSIONAL EXPERIENCE", edu:"EDUCATION", cert:"COURSES & CERTIFICATIONS", lang:"LANGUAGES" }
+      : { resumo:"RESUMO PROFISSIONAL", skills:"HABILIDADES E COMPETÊNCIAS", exp:"EXPERIÊNCIA PROFISSIONAL", edu:"FORMAÇÃO ACADÊMICA", cert:"CURSOS E CERTIFICAÇÕES", lang:"IDIOMAS" };
+
+    lines.push(H.resumo); lines.push(result.summary); lines.push("");
+    lines.push(H.exp);
+    result.expResults.forEach(function(er){
+      var exp = er.exp;
+      if (!exp.empresa && !exp.cargo) return;
+      lines.push(exp.cargo + " | " + exp.empresa + " - " + exp.inicio + " – " + exp.fim);
+      if (exp.local) lines.push(exp.local);
+      er.bullets.forEach(function(b){ lines.push("- " + b.texto); });
+      lines.push("");
+    });
+    if (state.formacao.length){
+      lines.push(H.edu);
+      state.formacao.forEach(function(f){ if (f.instituicao||f.curso) lines.push(f.curso + " | " + f.instituicao + " - " + f.periodo); });
+      lines.push("");
+    }
+    if (state.certificacoes.length){
+      lines.push(H.cert);
+      state.certificacoes.forEach(function(x){ if (x.nome) lines.push(x.nome + (x.instituicao ? " ("+x.instituicao+(x.ano?", "+x.ano:"")+")" : "")); });
+      lines.push("");
+    }
+    if (state.idiomas.length){
+      lines.push(H.lang);
+      state.idiomas.forEach(function(x){ if (x.idioma) lines.push(x.idioma + (x.nivel ? " – "+x.nivel : "")); });
+      lines.push("");
+    }
+    if (result.chosenSkillsByCategory && result.chosenSkillsByCategory.length){
+      lines.push(H.skills);
+      result.chosenSkillsByCategory.forEach(function(group){
+        lines.push(group.categoria + ":");
+        lines.push(group.skills.join(", "));
+      });
+    }
+    return lines.join("\n");
+  }
+
+  /* ---------------------------------------------------------------
+   * EXPORT BUTTONS
+   * ------------------------------------------------------------- */
+  document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+
+  document.getElementById("btnDownloadHtml").addEventListener("click", function(){
+    if (!lastResult) return;
+    var body = buildResumeHtml(lastResult);
+    var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Currículo</title><style>' +
+      'body{font-family:Arial,Helvetica,sans-serif;background:#fff;margin:0;padding:24px;}' +
+      '.resume-doc{max-width:760px;margin:0 auto;padding:0;font-size:12.5px;line-height:1.5;color:#111;}' +
+      '.resume-doc .resume-header{text-align:center;margin-bottom:14px;}' +
+      '.resume-doc h1{font-size:20px;margin:0 0 3px;letter-spacing:.01em;}' +
+      '.resume-doc .resume-subtitle{font-size:13px;color:#2a5ba8;margin-bottom:4px;}' +
+      '.resume-doc .contact-line{font-size:11.5px;color:#333;}' +
+      '.resume-doc h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid #111;padding-bottom:2px;margin:16px 0 8px;}' +
+      '.resume-doc .exp-block{margin-bottom:10px;} .resume-doc .exp-head{font-weight:bold;}' +
+      '.resume-doc .exp-dates{font-weight:normal;font-style:italic;}' +
+      '.resume-doc .exp-sub{font-style:italic;font-size:11.5px;margin-bottom:4px;} .resume-doc ul{margin:0 0 0 18px;padding:0;} .resume-doc li{margin-bottom:3px;}' +
+      '.resume-doc .skill-group{margin-bottom:6px;} .resume-doc .skill-cat{font-weight:bold;font-size:12px;margin-bottom:2px;}' +
+      '</style></head><body>' + body + '</body></html>';
+    downloadBlob(new Blob([doc], {type:"text/html"}), "curriculo-adaptado.html");
+  });
+
+  document.getElementById("btnDownloadTxt").addEventListener("click", function(){
+    if (!lastResult) return;
+    downloadBlob(new Blob([resumeToPlainText(lastResult)], {type:"text/plain"}), "curriculo-adaptado.txt");
+  });
+
+  document.getElementById("btnCopyTxt").addEventListener("click", function(){
+    if (!lastResult) return;
+    var text = resumeToPlainText(lastResult);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        var btn = document.getElementById("btnCopyTxt");
+        var old = btn.textContent; btn.textContent = "Copiado!";
+        setTimeout(function(){ btn.textContent = old; }, 1500);
+      });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); document.body.removeChild(ta);
+    }
+  });
+
+  /* ---------------------------------------------------------------
+   * SUGGESTION LISTS (datalists) — the person can always type something
+   * that isn't here; these are just a shortcut, not a closed list.
+   * ------------------------------------------------------------- */
+  function fillDatalist(id, values){
+    var dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = values.map(function(v){ return '<option value="'+escapeAttr(v)+'"></option>'; }).join("");
+  }
+
+  var SKILL_SUGGESTIONS = [
+    "Excel avançado","Excel intermediário","PowerPoint avançado","Word avançado","Outlook","Power BI","Power Query","Power Automate","VBA / Macros","Tableau","Looker Studio","SQL","Python","R","SAP (módulo MM)","SAP (módulo SD)","SAP (módulo FI)","Salesforce","HubSpot (CRM)","RD Station","Google Analytics","Google Ads","Meta Ads","LinkedIn Ads","SEO","SEM","Email marketing","Copywriting","Redes sociais","Marketing de conteúdo","Growth marketing","Trade marketing","Merchandising","Vendas B2B","Vendas B2C","Negociação","Prospecção de clientes","Atendimento ao cliente","Pós-vendas","Gestão de carteira de clientes","Gestão de equipes","Liderança","Recrutamento e Seleção","Treinamento e Desenvolvimento","Folha de pagamento","Departamento Pessoal","Gestão de projetos","Metodologias ágeis (Scrum/Kanban)","PMP","Six Sigma","Lean Manufacturing","Controladoria","Contabilidade","Análise financeira","Fluxo de caixa","Planejamento orçamentário","Auditoria","Direito Tributário","Direito Trabalhista","Comércio Exterior","Importação","Exportação","Incoterms","Classificação Fiscal (NCM)","Despacho Aduaneiro","DUIMP","Portal Único Siscomex","Logística","Supply Chain","Gestão de estoque","Compras / Procurement","Roteirização e transporte","Business Intelligence","Análise de dados","Modelagem de dados","Machine Learning","JavaScript","React","Node.js","Java","C#","HTML/CSS","Testes de software (QA)","UX/UI Design","Figma","Photoshop","Illustrator","AutoCAD","AWS","Microsoft Azure","Google Cloud Platform","Docker","Comunicação com stakeholders","Resolução de problemas","Pensamento analítico","Proatividade com autonomia","Trabalho sob pressão","Adaptabilidade","Inglês avançado","Inglês fluente","Espanhol avançado"
+  ];
+  var COURSE_SUGGESTIONS = [
+    "Administração","Administração — ênfase em Comércio Exterior","Comércio Exterior","Relações Internacionais","Economia","Ciências Contábeis","Direito","Engenharia de Produção","Engenharia Civil","Engenharia Mecânica","Engenharia Elétrica","Engenharia da Computação","Ciência da Computação","Sistemas de Informação","Análise e Desenvolvimento de Sistemas","Marketing","Publicidade e Propaganda","Comunicação Social — Jornalismo","Recursos Humanos / Gestão de Pessoas","Logística","Psicologia","Design Gráfico","Arquitetura e Urbanismo","Medicina","Enfermagem","Farmácia","Pedagogia","MBA em Gestão de Projetos","MBA em Gestão Empresarial","MBA em Finanças","MBA em Marketing","MBA em Logística e Supply Chain"
+  ];
+  var INSTITUTION_SUGGESTIONS = [
+    "Universidade de São Paulo (USP)","Universidade Estadual de Campinas (UNICAMP)","Universidade Estadual Paulista (UNESP)","Universidade Presbiteriana Mackenzie","Pontifícia Universidade Católica de São Paulo (PUC-SP)","Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)","Fundação Getulio Vargas (FGV)","Universidade Federal do Rio de Janeiro (UFRJ)","Universidade Federal de Minas Gerais (UFMG)","Universidade Federal da Bahia (UFBA)","Universidade de Brasília (UnB)","Universidade Federal de Santa Catarina (UFSC)","Universidade Federal do Paraná (UFPR)","Universidade Federal do Rio Grande do Sul (UFRGS)","Universidade Anhembi Morumbi","Universidade Nove de Julho (UNINOVE)","Universidade Paulista (UNIP)","Universidade Cruzeiro do Sul","Estácio","Universidade Ibirapuera","Insper","FIAP","Centro Universitário Belas Artes","Centro Paula Souza (ETEC/FATEC)","SENAC","SENAI"
+  ];
+  var CERT_NAME_SUGGESTIONS = [
+    "Google Ads Certification","Google Analytics Certification","Google Data Analytics Professional Certificate","HubSpot Inbound Marketing","HubSpot Inbound Sales","Meta Certified Digital Marketing Associate","Scrum Master (PSM I)","Scrum Master (CSM)","PMP — Project Management Professional","ITIL Foundation","Six Sigma Yellow Belt","Six Sigma Green Belt","AWS Certified Cloud Practitioner","Microsoft Certified: Azure Fundamentals","Excel Avançado","Power BI Fundamentals","SAP Business One","Inglês — TOEFL","Inglês — Cambridge (FCE/CAE)","Catálogo de Produtos e Novo Processo de Importação (NPI)","Despacho Aduaneiro","Formação em Comércio Exterior"
+  ];
+  var CERT_ISSUER_SUGGESTIONS = [
+    "Google","Meta","HubSpot Academy","Microsoft","AWS (Amazon)","Coursera","Udemy","Alura","FGV","SENAC","SENAI","Aduaneiras","LinkedIn Learning","Scrum.org","Scrum Alliance","PMI — Project Management Institute","Fundação Vanzolini","Sebrae"
+  ];
+  var LANGUAGE_SUGGESTIONS = ["Português","Inglês","Espanhol","Francês","Alemão","Italiano","Mandarim","Japonês","Coreano","Russo","Árabe"];
+  var LANGUAGE_LEVEL_SUGGESTIONS = ["Básico","Intermediário","Avançado","Fluente","Nativo","A1","A2","B1","B2","C1","C2"];
+
+  fillDatalist("skillNameOptions", SKILL_SUGGESTIONS);
+  fillDatalist("courseOptions", COURSE_SUGGESTIONS);
+  fillDatalist("institutionOptions", INSTITUTION_SUGGESTIONS);
+  fillDatalist("certNameOptions", CERT_NAME_SUGGESTIONS);
+  fillDatalist("certIssuerOptions", CERT_ISSUER_SUGGESTIONS);
+  fillDatalist("languageOptions", LANGUAGE_SUGGESTIONS);
+  fillDatalist("languageLevelOptions", LANGUAGE_LEVEL_SUGGESTIONS);
+
+  /* ---------------------------------------------------------------
+   * INIT
+   * ------------------------------------------------------------- */
+  renderSkills();
+  renderExperiences();
+  renderEdu();
+  renderCert();
+  renderLang();
+})();
+</script>
+</body>
+</html>
